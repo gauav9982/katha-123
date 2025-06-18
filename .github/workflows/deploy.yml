@@ -9,6 +9,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Katha-Sales
     
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +33,6 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "dist/*"
+          source: "Katha-Sales/dist/*"
           target: "/var/www/html/katha-sales"
-          strip_components: 1 
+          strip_components: 2 
