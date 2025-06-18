@@ -26,15 +26,14 @@ jobs:
         working-directory: ./Katha-Sales
         run: npm run build
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
-          if_key_exists: replace
-
-      - name: Adding Known Hosts
-        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
           
-      - name: Deploy with rsync
-        run: rsync -avz --delete ./Katha-Sales/dist/ root@${{ secrets.SERVER_HOST }}:/var/www/html/katha-sales/ 
+      - name: Deploy with scp
+        run: |
+          scp -i ~/.ssh/deploy_key -r ./Katha-Sales/dist/* root@${{ secrets.SERVER_HOST }}:/var/www/html/katha-sales/
+        env:
+          SSH_AUTH_SOCK: /dev/null 
