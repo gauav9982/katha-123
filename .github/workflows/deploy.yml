@@ -34,6 +34,10 @@ jobs:
           echo "Host *
             StrictHostKeyChecking no
             UserKnownHostsFile=/dev/null" > ~/.ssh/config
+            
+      - name: Test SSH Connection
+        run: |
+          ssh -v -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${{ secrets.SERVER_HOST }} 'echo "SSH Connection Successful"'
           
       - name: Deploy with scp
         run: |
