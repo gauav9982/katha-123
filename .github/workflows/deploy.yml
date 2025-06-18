@@ -45,8 +45,8 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
           
-          # Create app directory and set permissions
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "sudo mkdir -p /var/www/katha-sales && sudo chown -R $SERVER_USERNAME:$SERVER_USERNAME /var/www/katha-sales"
+          # Install PM2 and create app directory
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "sudo npm install -g pm2 && sudo mkdir -p /var/www/katha-sales && sudo chown -R $SERVER_USERNAME:$SERVER_USERNAME /var/www/katha-sales"
           
           # Deploy frontend and backend
           cd Katha-Sales
@@ -54,4 +54,4 @@ jobs:
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ../deploy.tar.gz $SERVER_USERNAME@$SERVER_HOST:/var/www/katha-sales/
           
           # Extract and setup on server
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "cd /var/www/katha-sales && tar -xzf deploy.tar.gz && npm install --production && pm2 restart katha-sales || pm2 start backend/index.cjs --name katha-sales" 
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "cd /var/www/katha-sales && tar -xzf deploy.tar.gz && npm install --production && pm2 delete katha-sales || true && pm2 start backend/index.cjs --name katha-sales" 
