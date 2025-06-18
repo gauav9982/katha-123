@@ -35,7 +35,7 @@ async function testAllGroupsNumbering() {
     // 1. Get all groups
     const groups = await makeRequest({
       hostname: 'localhost',
-      port: 4001,
+      port: 4000,
       path: '/api/groups',
       method: 'GET'
     });
@@ -46,7 +46,7 @@ async function testAllGroupsNumbering() {
     // 2. Get all categories
     const allCategories = await makeRequest({
       hostname: 'localhost',
-      port: 4001,
+      port: 4000,
       path: '/api/categories',
       method: 'GET'
     });
@@ -63,7 +63,7 @@ async function testAllGroupsNumbering() {
         // Get next category number for this group
         const nextNumberResult = await makeRequest({
           hostname: 'localhost',
-          port: 4001,
+          port: 4000,
           path: `/api/categories-next-number?group_id=${groupId}`,
           method: 'GET'
         });

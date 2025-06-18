@@ -52,8 +52,8 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 4001;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${PORT}`);
+app.listen(PORT, 'localhost', () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 module.exports = app; 
