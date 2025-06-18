@@ -27,6 +27,38 @@ router.get('/items', (req, res) => {
   });
 });
 
+// Get item by exact code
+router.get('/item-exact', (req, res) => {
+  const { code } = req.query;
+  
+  if (!code) {
+    return res.status(400).json({ error: 'Item code is required' });
+  }
+  
+  const query = `
+    SELECT id, item_code, item_name, mrp, gst_percentage, 
+           COALESCE(current_stock, opening_stock) as stock,
+           product_name, company_name, model
+    FROM tbl_items
+    WHERE item_code = ?
+  `;
+  
+  db.get(query, [code], (err, row) => {
+    if (err) {
+      console.error('Error fetching item by code:', err);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    
+    if (!row) {
+      res.status(404).json({ error: 'Item not found' });
+      return;
+    }
+    
+    res.json(row);
+  });
+});
+
 // Get all customers
 router.get('/customers', (req, res) => {
   const query = `
