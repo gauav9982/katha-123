@@ -1,5 +1,7 @@
 # Katha Sales Application
 
+This is a sales management application for Katha.
+
 ## Overview
 Katha Sales is a comprehensive sales and inventory management system designed for managing sales, purchases, inventory, and financial transactions.
 
@@ -421,4 +423,7 @@ For any issues or support, please contact:
 - Application is deployed at kathasales.com
 - Backend running on port 3000
 - Frontend served through Nginx
-- Database: SQLite 
+- Database: SQLite
+
+## Deployment
+The application is automatically deployed using GitHub Actions when changes are pushed to the master branch. 
