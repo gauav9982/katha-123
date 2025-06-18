@@ -9,9 +9,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Katha-Sales
     
     steps:
       - uses: actions/checkout@v2
@@ -22,17 +19,18 @@ jobs:
           node-version: '18'
           
       - name: Install Dependencies
+        working-directory: ./Katha-Sales
         run: npm install
           
       - name: Build
+        working-directory: ./Katha-Sales
         run: npm run build
           
-      - name: Deploy to Server
-        uses: appleboy/scp-action@master
+      - name: Deploy to Server via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          server: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          source: "Katha-Sales/dist/*"
-          target: "/var/www/html/katha-sales"
-          strip_components: 2 
+          local-dir: ./Katha-Sales/dist/
+          server-dir: /var/www/html/katha-sales/ 
