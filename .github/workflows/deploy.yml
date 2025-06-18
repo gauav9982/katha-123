@@ -26,32 +26,7 @@ jobs:
           npm install -D tailwindcss postcss autoprefixer
           npx tailwindcss init -p
           
-      - name: Create necessary files
-        working-directory: ./Katha-Sales
-        run: |
-          echo "module.exports = {
-            plugins: {
-              tailwindcss: {},
-              autoprefixer: {},
-            }
-          }" > postcss.config.js
-          
-          echo "/** @type {import('tailwindcss').Config} */
-          module.exports = {
-            content: [
-              './src/**/*.{js,ts,jsx,tsx}',
-              './index.html',
-            ],
-            theme: {
-              extend: {},
-            },
-            plugins: [
-              require('@tailwindcss/forms'),
-              require('daisyui'),
-            ],
-          }" > tailwind.config.js
-          
-      - name: Build
+      - name: Build Frontend
         working-directory: ./Katha-Sales
         run: |
           npm run build
@@ -70,9 +45,13 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
           
-          # Create directory if not exists and set permissions
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "sudo mkdir -p /var/www/html/katha-sales && sudo chown -R $SERVER_USERNAME:$SERVER_USERNAME /var/www/html/katha-sales"
+          # Create app directory and set permissions
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "sudo mkdir -p /var/www/katha-sales && sudo chown -R $SERVER_USERNAME:$SERVER_USERNAME /var/www/katha-sales"
           
-          # Deploy files
+          # Deploy frontend and backend
           cd Katha-Sales
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -r dist/* $SERVER_USERNAME@$SERVER_HOST:/var/www/html/katha-sales/ 
+          tar -czf ../deploy.tar.gz dist backend package.json
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ../deploy.tar.gz $SERVER_USERNAME@$SERVER_HOST:/var/www/katha-sales/
+          
+          # Extract and setup on server
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "cd /var/www/katha-sales && tar -xzf deploy.tar.gz && npm install --production && pm2 restart katha-sales || pm2 start backend/index.cjs --name katha-sales" 
