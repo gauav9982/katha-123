@@ -12,6 +12,8 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -21,6 +23,8 @@ jobs:
       - name: Install Dependencies
         working-directory: ./Katha-Sales
         run: |
+          echo "Current directory: $PWD"
+          ls -la
           npm install
           npm install -D @tailwindcss/forms
           npm install -D tailwindcss postcss autoprefixer
@@ -29,7 +33,10 @@ jobs:
       - name: Build Frontend
         working-directory: ./Katha-Sales
         run: |
+          echo "Building frontend..."
           npm run build
+          echo "Build completed. Contents of dist:"
+          ls -la dist/
         env:
           CI: false
 
@@ -39,19 +46,50 @@ jobs:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
         run: |
+          # Debug info
+          echo "Setting up SSH..."
+          
           # Setup SSH
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
           
-          # Install PM2 and create app directory
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "sudo npm install -g pm2 && sudo mkdir -p /var/www/katha-sales && sudo chown -R $SERVER_USERNAME:$SERVER_USERNAME /var/www/katha-sales"
+          # Test SSH connection
+          echo "Testing SSH connection..."
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "echo 'SSH connection successful'"
           
-          # Deploy frontend and backend
+          # Install PM2 and setup directories
+          echo "Installing PM2 and setting up directories..."
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
+            echo 'Current user:' \$(whoami);
+            echo 'Installing PM2...';
+            sudo npm install -g pm2;
+            echo 'Creating directories...';
+            sudo mkdir -p /var/www/katha-sales;
+            sudo chown -R \$USER:\$USER /var/www/katha-sales;
+            echo 'Directory permissions:';
+            ls -la /var/www/katha-sales
+          "
+          
+          # Package and deploy
+          echo "Packaging application..."
           cd Katha-Sales
           tar -czf ../deploy.tar.gz dist backend package.json
+          echo "Deploying to server..."
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ../deploy.tar.gz $SERVER_USERNAME@$SERVER_HOST:/var/www/katha-sales/
           
-          # Extract and setup on server
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "cd /var/www/katha-sales && tar -xzf deploy.tar.gz && npm install --production && pm2 delete katha-sales || true && pm2 start backend/index.cjs --name katha-sales" 
+          # Setup on server
+          echo "Setting up application on server..."
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
+            cd /var/www/katha-sales;
+            echo 'Extracting files...';
+            tar -xzf deploy.tar.gz;
+            echo 'Installing production dependencies...';
+            npm install --production;
+            echo 'Managing PM2 process...';
+            pm2 delete katha-sales || true;
+            pm2 start backend/index.cjs --name katha-sales;
+            pm2 save;
+            echo 'Deployment complete!'
+          " 
