@@ -11,29 +11,40 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           
       - name: Install Dependencies
         working-directory: ./Katha-Sales
-        run: npm install
+        run: |
+          npm install
+          npm install -D @tailwindcss/forms
           
       - name: Build
         working-directory: ./Katha-Sales
         run: npm run build
-
-      - name: Create SSH key
-        run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          
-      - name: Deploy with scp
-        run: |
-          scp -i ~/.ssh/deploy_key -r ./Katha-Sales/dist/* root@${{ secrets.SERVER_HOST }}:/var/www/html/katha-sales/
         env:
-          SSH_AUTH_SOCK: /dev/null 
+          CI: false
+
+      - name: Setup SSH and Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
+          
+          # Create directory if not exists
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST 'mkdir -p /var/www/html/katha-sales'
+          
+          # Deploy files
+          cd Katha-Sales
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -r dist/* $SERVER_USERNAME@$SERVER_HOST:/var/www/html/katha-sales/ 
