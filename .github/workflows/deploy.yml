@@ -23,10 +23,38 @@ jobs:
         run: |
           npm install
           npm install -D @tailwindcss/forms
+          npm install -D tailwindcss postcss autoprefixer
+          npx tailwindcss init -p
+          
+      - name: Create necessary files
+        working-directory: ./Katha-Sales
+        run: |
+          echo "module.exports = {
+            plugins: {
+              tailwindcss: {},
+              autoprefixer: {},
+            }
+          }" > postcss.config.js
+          
+          echo "/** @type {import('tailwindcss').Config} */
+          module.exports = {
+            content: [
+              './src/**/*.{js,ts,jsx,tsx}',
+              './index.html',
+            ],
+            theme: {
+              extend: {},
+            },
+            plugins: [
+              require('@tailwindcss/forms'),
+              require('daisyui'),
+            ],
+          }" > tailwind.config.js
           
       - name: Build
         working-directory: ./Katha-Sales
-        run: npm run build
+        run: |
+          npm run build
         env:
           CI: false
 
@@ -42,8 +70,8 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
           
-          # Create directory if not exists
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST 'mkdir -p /var/www/html/katha-sales'
+          # Create directory if not exists and set permissions
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "sudo mkdir -p /var/www/html/katha-sales && sudo chown -R $SERVER_USERNAME:$SERVER_USERNAME /var/www/html/katha-sales"
           
           # Deploy files
           cd Katha-Sales
