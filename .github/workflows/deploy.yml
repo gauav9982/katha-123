@@ -26,12 +26,15 @@ jobs:
         working-directory: ./Katha-Sales
         run: npm run build
 
-      - name: Create SSH key
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          echo "Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null" > ~/.ssh/config
           
       - name: Deploy with scp
         run: |
-          scp -i ~/.ssh/deploy_key -r ./Katha-Sales/dist/* root@${{ secrets.SERVER_HOST }}:/var/www/html/katha-sales/ 
+          scp -v -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ./Katha-Sales/dist/* root@${{ secrets.SERVER_HOST }}:/var/www/html/katha-sales/ 
