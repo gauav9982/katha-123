@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // API Base URL based on environment
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://api.kathasales.com'  // Production URL
+  ? 'http://168.231.122.33:4000'  // Production URL
   : 'http://localhost:4001';      // Development URL
 
 // Create axios instance with default config
