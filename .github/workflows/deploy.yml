@@ -25,13 +25,16 @@ jobs:
       - name: Build
         working-directory: ./Katha-Sales
         run: npm run build
-          
-      - name: Deploy to Server via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
         with:
-          username: ${{ secrets.SERVER_USERNAME }}
-          server: ${{ secrets.SERVER_HOST }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          local_path: './Katha-Sales/dist/*'
-          remote_path: '/var/www/html/katha-sales'
-          sftpArgs: '-o StrictHostKeyChecking=no' 
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          if_key_exists: replace
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          
+      - name: Deploy with rsync
+        run: rsync -avz --delete ./Katha-Sales/dist/ root@${{ secrets.SERVER_HOST }}:/var/www/html/katha-sales/ 
