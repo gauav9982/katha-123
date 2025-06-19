@@ -3,21 +3,20 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Button from '../../components/Button';
 import useAppStore from '../../store/useAppStore';
-import './CashSalePrint.css';
+import './CreditSalePrint.css';
 import { ArrowsPointingOutIcon, ArrowsPointingInIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { handleItemLookupOnKey } from '../../utils/itemLookup';
-import { API_URL } from '../../config';
 
-// API endpoints from config
-const API_ITEMS = API_URL.ITEMS;
-const API_CASHSALES = API_URL.CASHSALES;
-const API_CASHSALE_ITEMS = API_URL.CASHSALE_ITEMS;
-const API_PURCHASES = API_URL.PURCHASES;
-const API_PURCHASE_ITEMS = API_URL.PURCHASE_ITEMS;
-const API_LAST_PURCHASE = `${API_URL.PURCHASES}/last-purchase-by-code`;
+// API endpoints
+const API_ITEMS = 'http://localhost:4000/api/items';
+const API_CREDITSALES = 'http://localhost:4000/api/creditsales';
+const API_CREDITSALE_ITEMS = 'http://localhost:4000/api/creditsale-items';
+const API_PURCHASES = 'http://localhost:4000/api/purchases';
+const API_PURCHASE_ITEMS = 'http://localhost:4000/api/purchase-items';
+const API_LAST_PURCHASE = 'http://localhost:4000/api/last-purchase-by-code';
 
-// Cash Sale Form Component
-const CashSaleForm: React.FC = () => {
+// Credit Sale Form Component
+const CreditSaleForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { showAlert } = useAppStore();
@@ -83,8 +82,8 @@ const CashSaleForm: React.FC = () => {
     'Customer 1', 
     'Customer 2', 
     'Customer 3', 
-    'Walk-in Customer',
-    'Regular Customer'
+    'Credit Customer A',
+    'Credit Customer B'
   ];
   
   // Handle fullscreen toggle
@@ -105,9 +104,9 @@ const CashSaleForm: React.FC = () => {
     
     initInvoiceNumber();
     
-    // If editing, fetch the cash sale data
+    // If editing, fetch the credit sale data
     if (isEditing && id) {
-      fetchCashSale(id);
+      fetchCreditSale(id);
     }
   }, [isEditing, id]);
   
@@ -157,7 +156,7 @@ const CashSaleForm: React.FC = () => {
       searchForNewItem();
       
       // Clear the URL parameter after processing
-      navigate('/forms/cashsale-form', { replace: true });
+      navigate('/forms/creditsale-form', { replace: true });
     }
   }, [location]);
   
@@ -166,8 +165,8 @@ const CashSaleForm: React.FC = () => {
     if (isEditing) return; // Don't generate new number when editing
     
     try {
-      // Fetch all cash sales to find the highest invoice number
-      const response = await axios.get(API_CASHSALES);
+      // Fetch all credit sales to find the highest invoice number
+      const response = await axios.get(API_CREDITSALES);
       const sales = response.data || [];
       
       // Extract numeric values from invoice numbers (assuming simple numbers)
@@ -216,24 +215,24 @@ const CashSaleForm: React.FC = () => {
     }
   };
   
-  // Fetch a single cash sale for editing
-  const fetchCashSale = async (saleId: string) => {
+  // Fetch a single credit sale for editing
+  const fetchCreditSale = async (saleId: string) => {
     setLoading(true);
     try {
-      // Fetch cash sale header
-      const saleResponse = await axios.get(`${API_CASHSALES}/${saleId}`);
+      // Fetch credit sale header
+      const saleResponse = await axios.get(`${API_CREDITSALES}/${saleId}`);
       const sale = saleResponse.data;
       
-      // Set cash sale header data
+      // Set credit sale header data
       setInvoiceNumber(sale.invoice_number);
       setInvoiceDate(sale.invoice_date);
       setCustomer(sale.customer_name);
       setSalesType(sale.sales_type);
       
-      // Fetch cash sale items
-      const itemsResponse = await axios.get(`${API_CASHSALE_ITEMS}?sale_id=${saleId}`);
+      // Fetch credit sale items
+      const itemsResponse = await axios.get(`${API_CREDITSALE_ITEMS}?sale_id=${saleId}`);
       
-      // Format cash sale items with the required structure
+      // Format credit sale items with the required structure
       const items = itemsResponse.data.map((item: any) => ({
         id: item.id,
         item_id: item.item_id,
@@ -247,10 +246,10 @@ const CashSaleForm: React.FC = () => {
       setSaleItems(items);
       
     } catch (error) {
-      console.error('Error fetching cash sale for editing:', error);
-      showAlert('Failed to load cash sale data', 'error');
+      console.error('Error fetching credit sale for editing:', error);
+      showAlert('Failed to load credit sale data', 'error');
       // Navigate back to list on error
-      navigate('/lists/cashsale-list');
+      navigate('/lists/creditsale-list');
     } finally {
       setLoading(false);
     }
@@ -508,8 +507,8 @@ const CashSaleForm: React.FC = () => {
     }
   };
   
-  // Save cash sale to database
-  const handleSaveCashSale = async () => {
+  // Save credit sale to database
+  const handleSaveCreditSale = async () => {
     if (!customer) {
       showAlert('Please select a customer', 'error');
       return;
@@ -525,7 +524,7 @@ const CashSaleForm: React.FC = () => {
     setIsSaving(true);
     
     try {
-      // Prepare cash sale header data
+      // Prepare credit sale header data
       const saleData = {
         invoice_number: invoiceNumber,
         invoice_date: invoiceDate,
@@ -538,22 +537,22 @@ const CashSaleForm: React.FC = () => {
       let saleId: number;
       
       if (isEditing && id) {
-        // Update existing cash sale using API
-        await axios.put(`${API_CASHSALES}/${id}`, saleData);
+        // Update existing credit sale using API
+        await axios.put(`${API_CREDITSALES}/${id}`, saleData);
         saleId = parseInt(id);
         
-        // Delete existing cash sale items
-        const existingItems = await axios.get(`${API_CASHSALE_ITEMS}?sale_id=${saleId}`);
+        // Delete existing credit sale items
+        const existingItems = await axios.get(`${API_CREDITSALE_ITEMS}?sale_id=${saleId}`);
         for (const item of existingItems.data) {
-          await axios.delete(`${API_CASHSALE_ITEMS}/${item.id}`);
+          await axios.delete(`${API_CREDITSALE_ITEMS}/${item.id}`);
         }
       } else {
-        // Create new cash sale using API
-        const response = await axios.post(API_CASHSALES, saleData);
+        // Create new credit sale using API
+        const response = await axios.post(API_CREDITSALES, saleData);
         saleId = response.data.id;
       }
       
-      // Create cash sale items using API
+      // Create credit sale items using API
       for (const item of saleItems) {
         const itemData = {
           sale_id: saleId,
@@ -565,22 +564,22 @@ const CashSaleForm: React.FC = () => {
           amount: item.amount
         };
         
-        await axios.post(API_CASHSALE_ITEMS, itemData);
+        await axios.post(API_CREDITSALE_ITEMS, itemData);
       }
       
       showAlert(
-        isEditing ? 'Cash Sale updated successfully!' : 'Cash Sale saved successfully!',
+        isEditing ? 'Credit Sale updated successfully!' : 'Credit Sale saved successfully!',
         'success'
       );
       
-      // Navigate to cash sale list after a short delay
+      // Navigate to credit sale list after a short delay
       setTimeout(() => {
-        navigate('/lists/cashsale-list');
+        navigate('/lists/creditsale-list');
       }, 500);
     } catch (error) {
-      console.error('Error saving cash sale:', error);
+      console.error('Error saving credit sale:', error);
       showAlert(
-        isEditing ? 'Failed to update cash sale' : 'Failed to save cash sale',
+        isEditing ? 'Failed to update credit sale' : 'Failed to save credit sale',
         'error'
       );
     } finally {
@@ -588,7 +587,7 @@ const CashSaleForm: React.FC = () => {
     }
   };
   
-  // Save and Print cash sale
+  // Save and Print credit sale
   const handleSaveAndPrint = async () => {
     if (!customer) {
       showAlert('Please select a customer', 'error');
@@ -605,7 +604,7 @@ const CashSaleForm: React.FC = () => {
     setIsSaving(true);
     
     try {
-      // Prepare cash sale header data
+      // Prepare credit sale header data
       const saleData = {
         invoice_number: invoiceNumber,
         invoice_date: invoiceDate,
@@ -619,24 +618,24 @@ const CashSaleForm: React.FC = () => {
       let savedSale: any = { ...saleData };
       
       if (isEditing && id) {
-        // Update existing cash sale using API
-        await axios.put(`${API_CASHSALES}/${id}`, saleData);
+        // Update existing credit sale using API
+        await axios.put(`${API_CREDITSALES}/${id}`, saleData);
         saleId = parseInt(id);
         savedSale.id = saleId;
         
-        // Delete existing cash sale items
-        const existingItems = await axios.get(`${API_CASHSALE_ITEMS}?sale_id=${saleId}`);
+        // Delete existing credit sale items
+        const existingItems = await axios.get(`${API_CREDITSALE_ITEMS}?sale_id=${saleId}`);
         for (const item of existingItems.data) {
-          await axios.delete(`${API_CASHSALE_ITEMS}/${item.id}`);
+          await axios.delete(`${API_CREDITSALE_ITEMS}/${item.id}`);
         }
       } else {
-        // Create new cash sale using API
-        const response = await axios.post(API_CASHSALES, saleData);
+        // Create new credit sale using API
+        const response = await axios.post(API_CREDITSALES, saleData);
         saleId = response.data.id;
         savedSale.id = saleId;
       }
       
-      // Create cash sale items using API
+      // Create credit sale items using API
       for (const item of saleItems) {
         const itemData = {
           sale_id: saleId,
@@ -648,15 +647,15 @@ const CashSaleForm: React.FC = () => {
           amount: item.amount
         };
         
-        await axios.post(API_CASHSALE_ITEMS, itemData);
+        await axios.post(API_CREDITSALE_ITEMS, itemData);
       }
       
       showAlert(
-        isEditing ? 'Cash Sale updated successfully!' : 'Cash Sale saved successfully!',
+        isEditing ? 'Credit Sale updated successfully!' : 'Credit Sale saved successfully!',
         'success'
       );
       
-      // Print the cash sale
+      // Print the credit sale
       const saleWithItems = {
         ...savedSale,
         items: saleItems
@@ -667,10 +666,10 @@ const CashSaleForm: React.FC = () => {
       
       if (printWindow) {
         // Write the print content to the new window
-        printWindow.document.write('<html><head><title>Cash Sale Invoice</title>');
+        printWindow.document.write('<html><head><title>Credit Sale Invoice</title>');
         printWindow.document.write('<style>');
         printWindow.document.write(`
-          /* Print styles for Cash Sale Invoice */
+          /* Print styles for Credit Sale Invoice */
           @page {
             size: A4;
             margin: 0.5cm;
@@ -829,7 +828,7 @@ const CashSaleForm: React.FC = () => {
           <div class="print-invoice">
             <div class="print-header">
               <div class="company-name">KATHA SALES</div>
-              <div>Cash Sale Invoice</div>
+              <div>Credit Sale Invoice</div>
             </div>
             
             <div class="invoice-info">
@@ -891,27 +890,27 @@ const CashSaleForm: React.FC = () => {
         // Only navigate back after the printWindow is closed
         printWindow.onafterprint = () => {
           setTimeout(() => {
-            navigate('/lists/cashsale-list');
+            navigate('/lists/creditsale-list');
           }, 500);
         };
       } else {
         showAlert('Could not open print window. Please check if pop-up is blocked.', 'error');
-        // Navigate to cash sale list if printing fails
+        // Navigate to credit sale list if printing fails
         setTimeout(() => {
-          navigate('/lists/cashsale-list');
+          navigate('/lists/creditsale-list');
         }, 500);
       }
     } catch (error) {
-      console.error('Error saving and printing cash sale:', error);
+      console.error('Error saving and printing credit sale:', error);
       showAlert(
-        isEditing ? 'Failed to update and print cash sale' : 'Failed to save and print cash sale',
+        isEditing ? 'Failed to update and print credit sale' : 'Failed to save and print credit sale',
         'error'
       );
     } finally {
       setIsSaving(false);
     }
   };
-
+  
   // Show loading spinner while data is being loaded
   if (loading) {
     return (
@@ -926,7 +925,7 @@ const CashSaleForm: React.FC = () => {
     <div ref={formRef} className={`bg-white rounded-lg shadow-md ${isFullscreen ? 'fullscreen-form' : ''}`}>
       {/* Form Header */}
       <div className="bg-primary text-white px-6 py-4 rounded-t-lg flex justify-between items-center">
-        <h2 className="text-xl font-semibold">{isEditing ? 'Edit Cash Sale Invoice' : 'New Cash Sale Invoice'}</h2>
+        <h2 className="text-xl font-semibold">{isEditing ? 'Edit Credit Sale Invoice' : 'New Credit Sale Invoice'}</h2>
         <div className="flex items-center space-x-2">
           <button
             onClick={toggleFullscreen}
@@ -1013,7 +1012,7 @@ const CashSaleForm: React.FC = () => {
                   type="button"
                   onClick={() => {
                     // Open the item form in a new window/tab with full URL including port
-                    const itemFormWindow = window.open('http://localhost:5173/forms/item?returnTo=cash', '_blank');
+                    const itemFormWindow = window.open('http://localhost:5173/forms/item?returnTo=credit', '_blank');
                     
                     // Add event listener to receive the newly created item code
                     const handleMessage = (event: MessageEvent) => {
@@ -1221,13 +1220,13 @@ const CashSaleForm: React.FC = () => {
         {/* Bottom Action Buttons */}
         <div className="flex justify-end space-x-4">
           <Button
-            onClick={() => navigate('/lists/cashsale-list')}
+            onClick={() => navigate('/lists/creditsale-list')}
             className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
           >
             Cancel
           </Button>
           <Button
-            onClick={handleSaveCashSale}
+            onClick={handleSaveCreditSale}
             disabled={isSaving}
             className={`bg-green-600 text-white px-6 py-2 rounded-md transition-colors ${
               isSaving 
@@ -1265,4 +1264,4 @@ const CashSaleForm: React.FC = () => {
   );
 };
 
-export default CashSaleForm; 
+export default CreditSaleForm; 
