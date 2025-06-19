@@ -21,12 +21,7 @@ jobs:
           node-version: '18'
           
       - name: Install Dependencies
-        run: |
-          echo "Installing dependencies..."
-          npm install
-          npm install -D @tailwindcss/forms
-          npm install -D tailwindcss postcss autoprefixer
-          npx tailwindcss init -p
+        run: npm install
           
       - name: Build Frontend
         run: |
