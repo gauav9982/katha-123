@@ -3,15 +3,15 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - main
-      - master
+      - main  # Only trigger on main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
@@ -21,17 +21,14 @@ jobs:
           node-version: '18'
           
       - name: Install Dependencies
-        working-directory: ./Katha-Sales
         run: |
-          echo "Current directory: $PWD"
-          ls -la
+          echo "Installing dependencies..."
           npm install
           npm install -D @tailwindcss/forms
           npm install -D tailwindcss postcss autoprefixer
           npx tailwindcss init -p
           
       - name: Build Frontend
-        working-directory: ./Katha-Sales
         run: |
           echo "Building frontend..."
           npm run build
@@ -40,56 +37,59 @@ jobs:
         env:
           CI: false
 
-      - name: Setup SSH and Deploy
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      - name: Setup SSH
         run: |
-          # Debug info
           echo "Setting up SSH..."
-          
-          # Setup SSH
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
-          
-          # Test SSH connection
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
           echo "Testing SSH connection..."
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "echo 'SSH connection successful'"
-          
-          # Install PM2 and setup directories
-          echo "Installing PM2 and setting up directories..."
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
-            echo 'Current user:' \$(whoami);
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
+
+      - name: Setup Server Environment
+        run: |
+          echo "Setting up server environment..."
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "
             echo 'Installing PM2...';
             sudo npm install -g pm2;
-            echo 'Creating directories...';
+            
+            echo 'Setting up directories...';
             sudo mkdir -p /var/www/katha-sales;
             sudo chown -R \$USER:\$USER /var/www/katha-sales;
+            
             echo 'Directory permissions:';
             ls -la /var/www/katha-sales
           "
-          
-          # Package and deploy
+
+      - name: Deploy Application
+        run: |
           echo "Packaging application..."
-          cd Katha-Sales
-          tar -czf ../deploy.tar.gz dist backend package.json
-          echo "Deploying to server..."
-          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ../deploy.tar.gz $SERVER_USERNAME@$SERVER_HOST:/var/www/katha-sales/
+          tar -czf deploy.tar.gz dist backend package.json
           
-          # Setup on server
+          echo "Copying files to server..."
+          scp -i ~/.ssh/deploy_key deploy.tar.gz ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/var/www/katha-sales/
+          
           echo "Setting up application on server..."
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "
             cd /var/www/katha-sales;
+            
             echo 'Extracting files...';
             tar -xzf deploy.tar.gz;
+            
             echo 'Installing production dependencies...';
             npm install --production;
-            echo 'Managing PM2 process...';
-            pm2 delete katha-sales || true;
+            
+            echo 'Configuring PM2...';
+            pm2 delete katha-sales 2>/dev/null || true;
             pm2 start backend/index.cjs --name katha-sales;
             pm2 save;
+            
+            echo 'Cleaning up...';
+            rm deploy.tar.gz;
+            
             echo 'Deployment complete!'
           "
