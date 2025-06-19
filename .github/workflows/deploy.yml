@@ -3,7 +3,6 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - main
       - master
 
 jobs:
@@ -49,15 +48,19 @@ jobs:
       - name: Test SSH Connection
         run: |
           echo "Testing SSH connection..."
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "echo 'SSH connection successful'"
-          
-          # Install PM2 and setup directories
-          echo "Installing PM2 and setting up directories..."
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SERVER_USERNAME@$SERVER_HOST "
-            echo 'Current user:' \$(whoami);
-            echo 'Installing PM2...';
-            sudo npm install -g pm2;
-            echo 'Creating directories...';
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
+
+      - name: Setup Server Environment
+        run: |
+          echo "Setting up server environment..."
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "
+            if ! command -v pm2 &> /dev/null; then
+              echo 'Installing PM2...';
+              curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash -;
+              sudo npm install -g pm2;
+            fi
+            
+            echo 'Setting up directories...';
             sudo mkdir -p /var/www/katha-sales;
             sudo chown -R \$USER:\$USER /var/www/katha-sales;
             
@@ -82,9 +85,16 @@ jobs:
             
             echo 'Installing production dependencies...';
             npm install --production;
-            echo 'Managing PM2 process...';
-            pm2 delete katha-sales || true;
-            pm2 start backend/index.cjs --name katha-sales;
+            
+            echo 'Configuring PM2...';
+            pm2 describe katha-sales > /dev/null
+            if [ \$? -eq 0 ]; then
+              echo 'Reloading existing PM2 process...';
+              pm2 reload katha-sales;
+            else
+              echo 'Starting new PM2 process...';
+              pm2 start backend/index.cjs --name katha-sales;
+            fi
             pm2 save;
             
             echo 'Cleaning up...';
