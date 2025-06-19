@@ -10,11 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 1
+      - name: Manually shallow clone repository
+        run: |
+          set -x
+          GIT_CURL_VERBOSE=1 git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
