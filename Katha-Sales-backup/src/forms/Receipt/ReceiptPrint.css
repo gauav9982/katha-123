@@ -1,0 +1,61 @@
+/* Receipt Print Styles */
+.receipt-print-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.receipt-print {
+  padding: 20px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  background-color: white;
+}
+
+/* A5 Landscape Size */
+.a5-landscape {
+  width: 210mm;  /* A5 width */
+  height: 148mm; /* A5 height */
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+  }
+  
+  .receipt-print-container {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .receipt-print {
+    border: none;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  .a5-landscape {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    overflow: hidden;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Ensure that background colors and images are printed */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+} 
