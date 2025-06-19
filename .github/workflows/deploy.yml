@@ -10,8 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Debug Info
+        run: |
+          whoami
+          git --version
+          echo "Repository: ${{ github.repository }}"
+          echo "Is GITHUB_TOKEN set: ${{ secrets.GITHUB_TOKEN != '' }}"
+
       - name: Manually clone the repository
-        run: git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} .
+        run: |
+          set -x
+          GIT_CURL_VERBOSE=1 git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
