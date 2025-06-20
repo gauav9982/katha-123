@@ -24,7 +24,6 @@ import type { RootState } from '../store';
 import AlertMessage from '../components/AlertMessage';
 import config from '../config';
 import logoSvg from '../assets/logo.svg';
-import logoBmp from '../assets/logo.bmp';
 import axios from 'axios';
 
 // Database Connection Status Component
@@ -268,12 +267,29 @@ const MainLayout = () => {
         {/* Page Content */}
         <main className="py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <HomePageContent />
             <Outlet />
           </div>
         </main>
       </div>
     </div>
   );
+};
+
+const HomePageContent = () => {
+  const location = useLocation();
+
+  if (location.pathname === '/') {
+    return (
+      <div className="p-8">
+        <h1 className="text-6xl font-bold text-red-600 text-center animate-pulse">
+          I AM BEST
+        </h1>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default MainLayout; 
