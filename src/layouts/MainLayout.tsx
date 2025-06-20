@@ -283,7 +283,7 @@ const HomePageContent = () => {
     return (
       <div className="p-8">
         <h1 className="text-6xl font-bold text-red-600 text-center animate-pulse">
-          I AM BEST
+          I AM BEST!
         </h1>
       </div>
     );
