@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: '18'
           
-      - name: Install Dependencies
-        run: npm install
-          
       - name: Build Frontend
         run: |
           echo "Building frontend..."
@@ -45,24 +42,6 @@ jobs:
           echo "Testing SSH connection..."
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
 
-      - name: Setup Server Environment
-        run: |
-          echo "Setting up server environment..."
-          ssh -i ~/.ssh/deploy_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "
-            if ! command -v pm2 &> /dev/null; then
-              echo 'Installing PM2...';
-              curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash -;
-              sudo npm install -g pm2;
-            fi
-            
-            echo 'Setting up directories...';
-            sudo mkdir -p /var/www/katha-sales;
-            sudo chown -R \$USER:\$USER /var/www/katha-sales;
-            
-            echo 'Directory permissions:';
-            ls -la /var/www/katha-sales
-          "
-
       - name: Deploy Application
         run: |
           echo "Packaging application..."
@@ -77,13 +56,6 @@ jobs:
             
             echo 'Extracting files...';
             tar -xzf deploy.tar.gz;
-            
-            echo '--- VERIFYING FILE CONTENTS ON SERVER ---';
-            echo '--- ecosystem.config.cjs ---';
-            cat ecosystem.config.cjs;
-            echo '--- backend/index.cjs ---';
-            cat backend/index.cjs;
-            echo '--- VERIFICATION COMPLETE ---';
             
             echo 'Installing backend dependencies...';
             cd backend && npm install --production && cd ..;
