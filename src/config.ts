@@ -11,7 +11,12 @@ const useLocalDb = import.meta.env.VITE_USE_LOCAL_DB === 'true';
 // OR if we are in development but VITE_USE_LOCAL_DB is *not* set to true.
 const isLiveServer = !isDevelopment || !useLocalDb;
 
-const serverUrl = 'http://168.231.122.33'; // Live server IP (Nginx handles port)
+const serverUrl = useLocalDb
+  ? 'http://localhost:4000/api'
+  : 'http://168.231.122.33/api';
+
+const liveServerUrl = 'http://168.231.122.33/api';
+
 const localUrl = 'http://localhost:4001';   // Base URL for local backend
 
 const baseUrl = isLiveServer ? serverUrl : localUrl;
@@ -23,6 +28,7 @@ const config = {
   serverUrl,
   localUrl,
   apiUrl,
+  useLocalDb,
 };
 export default config;
 

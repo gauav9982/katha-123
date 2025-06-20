@@ -32,6 +32,14 @@ app.use(express.urlencoded({ extended: true }));
 // Use routes
 app.use('/api', routes);
 
+// Health check for the API endpoint itself
+app.get('/api', (req, res) => {
+  res.status(200).json({ 
+    message: 'Katha Sales API is alive and reachable',
+    status: 'running' 
+  });
+});
+
 // Basic route for testing
 app.get('/', (req, res) => {
   res.json({ 
