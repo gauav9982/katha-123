@@ -54,6 +54,9 @@ jobs:
           ssh -i ~/.ssh/deploy_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "
             cd /var/www/katha-sales;
             
+            echo 'Updating Nginx configuration...';
+            sudo sed -i 's#root /var/www/katha-sales;#root /var/www/katha-sales/dist;#' /etc/nginx/sites-available/katha-sales.conf
+            
             echo 'Extracting files...';
             tar -xzf deploy.tar.gz;
             
