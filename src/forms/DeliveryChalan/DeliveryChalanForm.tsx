@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import Button from '../../components/Button';
 import useAppStore from '../../store/useAppStore';
 import './DeliveryChalanPrint.css';
@@ -227,19 +228,60 @@ const DeliveryChalanForm: React.FC = () => {
   
   // Handle barcode/item code search
   const handleBarcodeSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value.trim();
+    const inputValue = e.target.value;
     setBarcodeInput(inputValue);
     
-    if (inputValue === '') {
-      // Reset current item if input is cleared
+    if (!inputValue.trim()) {
       setCurrentItem({
         item_id: 0,
         item_name: '',
         item_code: '',
-        quantity: 1
+        quantity: 1,
+        rate: 0,
+        amount: 0,
+        gst_percentage: 0,
+        gst_amount: 0,
+        discount_percentage: 0,
+        discount_amount: 0,
+        total: 0
+      });
+      return;
+    }
+    
+    try {
+      // Search for item as user types
+      const response = await axios.get(`${API_URL.BASE}/item-exact`, {
+        params: { code: inputValue }
+      });
+
+      if (response.data && response.data.item) {
+        // Update the current item with the found item
+        updateCurrentItem(response.data.item);
+        
+        // Focus on the quantity field next
+        if (barcodeInputRef.current) {
+          barcodeInputRef.current.focus();
+        }
+      }
+    } catch (error) {
+      console.error("Error in item lookup:", error);
+      showAlert('Item not found with this code', 'error');
+      
+      // Keep the entered code but reset other fields
+      setCurrentItem({
+        item_id: 0,
+        item_name: '',
+        item_code: inputValue,
+        quantity: 1,
+        rate: 0,
+        amount: 0,
+        gst_percentage: 0,
+        gst_amount: 0,
+        discount_percentage: 0,
+        discount_amount: 0,
+        total: 0
       });
     }
-    // No need to do any lookups while typing - we'll do that on Tab/Enter in handleBarcodeKeyDown
   };
   
   // Handle Tab and Enter key for exact item lookup
@@ -271,7 +313,14 @@ const DeliveryChalanForm: React.FC = () => {
           item_id: 0,
           item_name: '',
           item_code: barcodeInput,
-          quantity: 1
+          quantity: 1,
+          rate: 0,
+          amount: 0,
+          gst_percentage: 0,
+          gst_amount: 0,
+          discount_percentage: 0,
+          discount_amount: 0,
+          total: 0
         });
       }
     );
@@ -283,7 +332,14 @@ const DeliveryChalanForm: React.FC = () => {
       item_id: foundItem.id,
       item_name: foundItem.item_name,
       item_code: foundItem.item_code || '',
-      quantity: 1
+      quantity: 1,
+      rate: foundItem.rate || 0,
+      amount: foundItem.amount || 0,
+      gst_percentage: foundItem.gst_percentage || 0,
+      gst_amount: foundItem.gst_amount || 0,
+      discount_percentage: foundItem.discount_percentage || 0,
+      discount_amount: foundItem.discount_amount || 0,
+      total: foundItem.total || 0
     });
   };
   
@@ -317,7 +373,14 @@ const DeliveryChalanForm: React.FC = () => {
       item_id: 0,
       item_name: '',
       item_code: '',
-      quantity: 1
+      quantity: 1,
+      rate: 0,
+      amount: 0,
+      gst_percentage: 0,
+      gst_amount: 0,
+      discount_percentage: 0,
+      discount_amount: 0,
+      total: 0
     });
     setBarcodeInput('');
     
@@ -360,7 +423,14 @@ const DeliveryChalanForm: React.FC = () => {
           item_id: 0,
           item_name: '',
           item_code: '',
-          quantity: 1
+          quantity: 1,
+          rate: 0,
+          amount: 0,
+          gst_percentage: 0,
+          gst_amount: 0,
+          discount_percentage: 0,
+          discount_amount: 0,
+          total: 0
         });
         setBarcodeInput('');
       }

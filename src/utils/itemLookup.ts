@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-// IMPORTANT: Only the server IP, do NOT include /api here
-const API_URL = 'http://168.231.122.33:4000';
+import { API_URL } from '../config';
 
 /**
  * Function to handle item lookup on Tab or Enter key press
@@ -29,7 +27,7 @@ export const handleItemLookupOnKey = async (
       console.log('Looking up item with exact code:', itemCode);
       
       // Call the exact match endpoint
-      const response = await axios.get(`${API_URL}/api/item-exact`, {
+      const response = await axios.get(`${API_URL.BASE}/item-exact`, {
         params: { code: itemCode.trim() }
       });
       

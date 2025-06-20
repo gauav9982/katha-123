@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { 
   Bars3Icon, 
@@ -22,31 +22,37 @@ import {
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import AlertMessage from '../components/AlertMessage';
-import { DATABASE_INFO } from '../config';
+import config from '../config';
 import logoSvg from '../assets/logo.svg';
 import logoBmp from '../assets/logo.bmp';
+import axios from 'axios';
 
 // Database Connection Status Component
 const DatabaseStatus = () => {
+  const [isLive, setIsLive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkConnection = async () => {
+    const checkStatus = async () => {
+      setIsLoading(true);
+      const url = config.isLiveServer ? config.serverUrl : config.localUrl;
+      const liveStatus = config.isLiveServer;
+      setIsLive(liveStatus);
       try {
-        const response = await fetch(`${DATABASE_INFO.isLiveServer ? DATABASE_INFO.serverUrl : DATABASE_INFO.localUrl}/`);
-        setIsConnected(response.ok);
+        await axios.get(url); // Check the API base URL directly
+        setIsConnected(true);
       } catch (error) {
         setIsConnected(false);
       } finally {
-        setIsChecking(false);
+        setIsLoading(false);
       }
     };
 
-    checkConnection();
+    checkStatus();
   }, []);
 
-  if (isChecking) {
+  if (isLoading) {
     return (
       <div className="flex items-center px-3 py-1 text-xs">
         <div className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-blue-600 mr-2"></div>
@@ -61,12 +67,12 @@ const DatabaseStatus = () => {
         ? 'bg-green-100 text-green-800' 
         : 'bg-red-100 text-red-800'
     }`}>
-      {DATABASE_INFO.isLiveServer ? (
+      {config.isLiveServer ? (
         <ServerIcon className="h-3 w-3 mr-1" />
       ) : (
         <ComputerDesktopIcon className="h-3 w-3 mr-1" />
       )}
-      {DATABASE_INFO.isLiveServer ? 'Live Server' : 'Local DB'}
+      {config.isLiveServer ? 'Live Server' : 'Local DB'}
       <div className={`ml-1 h-2 w-2 rounded-full ${
         isConnected ? 'bg-green-500' : 'bg-red-500'
       }`}></div>

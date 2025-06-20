@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database.cjs');
 
+// Base route for API health check
+router.get('/', (req, res) => {
+  res.status(200).json({ message: 'API is running' });
+});
+
 // Health check route
 router.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date() });
@@ -20,6 +25,41 @@ router.get('/items', (req, res) => {
   db.all(query, [], (err, rows) => {
     if (err) {
       console.error('Error fetching items:', err);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// Get all categories
+router.get('/categories', (req, res) => {
+  const query = `
+    SELECT id, category_name
+    FROM tbl_categories
+    ORDER BY category_name
+  `;
+  
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching categories:', err);
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// Get all purchase items (for checking usage)
+router.get('/purchase-items', (req, res) => {
+  const query = `
+    SELECT id, item_id
+    FROM tbl_purchase_items
+  `;
+  
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching purchase items:', err);
       res.status(500).json({ error: err.message });
       return;
     }

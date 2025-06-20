@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
@@ -9,6 +9,7 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import useAppStore from '../../store/useAppStore';
+import { API_URL } from '../../config';
 
 interface Category {
   id: number;
@@ -39,10 +40,6 @@ interface PurchaseItem {
   item_id: number;
 }
 
-const API_ITEMS = 'http://168.231.122.33:4000/api/items';
-const API_CATEGORIES = 'http://168.231.122.33:4000/api/categories';
-const API_PURCHASE_ITEMS = 'http://168.231.122.33:4000/api/purchase-items';
-
 const ItemList = () => {
   const navigate = useNavigate();
   const showAlert = useAppStore((state) => state.showAlert);
@@ -66,7 +63,7 @@ const ItemList = () => {
   
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(API_CATEGORIES);
+      const res = await axios.get(API_URL.CATEGORIES);
       setCategories(res.data);
     } catch (error) {
       // ignore
@@ -76,7 +73,7 @@ const ItemList = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(API_ITEMS);
+      const res = await axios.get(API_URL.ITEMS);
       setItems(res.data);
     } catch (error) {
       showAlert('Failed to load items', 'error');
@@ -87,7 +84,7 @@ const ItemList = () => {
   
   const fetchPurchaseItems = async () => {
     try {
-      const res = await axios.get(API_PURCHASE_ITEMS);
+      const res = await axios.get(API_URL.PURCHASE_ITEMS);
       setPurchaseItems(res.data);
     } catch (error) {
       // ignore
@@ -149,7 +146,7 @@ const ItemList = () => {
       return;
     }
     try {
-      await axios.delete(`${API_ITEMS}/${selectedItem.id}`);
+      await axios.delete(`${API_URL.ITEMS}/${selectedItem.id}`);
       showAlert('Item deleted successfully', 'success');
       fetchItems();
     } catch (error) {
@@ -178,8 +175,8 @@ const ItemList = () => {
           <button
             type="button"
             onClick={() => {
-              console.log("DEBUG - All items in DB:", axios.get(API_ITEMS));
-              console.log("DEBUG - All categories in DB:", axios.get(API_CATEGORIES));
+              console.log("DEBUG - All items in DB:", axios.get(API_URL.ITEMS));
+              console.log("DEBUG - All categories in DB:", axios.get(API_URL.CATEGORIES));
               console.log("DEBUG - localStorage data:", localStorage.getItem('katha_sales_database') ? 'Exists (too large to print)' : 'None');
               alert("Database debugging information logged to console.");
             }}

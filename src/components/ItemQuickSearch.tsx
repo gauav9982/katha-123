@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config';
 import useAppStore from '../store/useAppStore';
 
 interface Item {
@@ -52,7 +53,7 @@ const ItemQuickSearch = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`http://168.231.122.33:4000/api/item-exact?code=${codeSearchValue}`);
+      const response = await axios.get(`${API_URL.BASE}/item-exact?code=${codeSearchValue}`);
       
       // API returns item with lastPurchase details
       if (response.data && response.data.item) {
@@ -84,7 +85,7 @@ const ItemQuickSearch = () => {
     setLoading(true);
     try {
       // Using the existing API endpoint that can search items
-      const response = await axios.get(`http://168.231.122.33:4000/api/items?query=${nameSearchValue}`);
+      const response = await axios.get(`${API_URL.ITEMS}?query=${nameSearchValue}`);
       setSearchResults(response.data);
       setShowResults(true);
     } catch (error) {
@@ -121,7 +122,7 @@ const ItemQuickSearch = () => {
     
     // Get last purchase info
     try {
-      const response = await axios.get(`http://168.231.122.33:4000/api/last-purchase-by-code?item_code=${item.item_code}`);
+      const response = await axios.get(`${API_URL.BASE}/last-purchase-by-code?item_code=${item.item_code}`);
       setLastPurchaseInfo({
         lastPurchaseDate: response.data.lastPurchaseDate || 'No purchase',
         lastCost: response.data.lastCost || 0

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import useAppStore from '../../store/useAppStore';
 
 interface Group {
@@ -8,8 +9,6 @@ interface Group {
   group_number: number;
   group_name: string;
 }
-
-const API_URL = 'http://168.231.122.33:4000/api/groups';
 
 const GroupForm = () => {
   const navigate = useNavigate();

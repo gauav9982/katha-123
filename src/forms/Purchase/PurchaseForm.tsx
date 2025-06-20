@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import Button from '../../components/Button';
 import useAppStore from '../../store/useAppStore';
 import './PurchasePrint.css';
@@ -115,7 +116,7 @@ const PurchaseForm: React.FC = () => {
       const searchForNewItem = async () => {
         try {
           // Use the itemLookup utility to find the item
-          const response = await axios.get(`http://168.231.122.33:4000/api/item-exact`, {
+          const response = await axios.get(`${API_URL.BASE}/item-exact`, {
             params: { code: newItemCode.trim() }
           });
           
@@ -147,7 +148,7 @@ const PurchaseForm: React.FC = () => {
     
     try {
       // Fetch all purchases to find the highest invoice number
-      const response = await axios.get(API_PURCHASES);
+      const response = await axios.get(API_URL.PURCHASES);
       const purchases = response.data || [];
       
       // Filter purchase numbers that match our format "p-X"
@@ -181,7 +182,7 @@ const PurchaseForm: React.FC = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(API_ITEMS);
+      const response = await axios.get(API_URL.ITEMS);
       
       // Process items to ensure consistent data types
       const processedItems = response.data.map((item: any) => {
@@ -206,7 +207,7 @@ const PurchaseForm: React.FC = () => {
     setLoading(true);
     try {
       // Fetch purchase header
-      const purchaseResponse = await axios.get(`${API_PURCHASES}/${purchaseId}`);
+      const purchaseResponse = await axios.get(`${API_URL.PURCHASES}/${purchaseId}`);
       const purchase = purchaseResponse.data;
       
       // Set purchase header data
@@ -215,7 +216,7 @@ const PurchaseForm: React.FC = () => {
       setVendor(purchase.vendor_name);
       
       // Fetch purchase items
-      const itemsResponse = await axios.get(`${API_PURCHASE_ITEMS}?purchase_id=${purchaseId}`);
+      const itemsResponse = await axios.get(`${API_URL.PURCHASE_ITEMS}?purchase_id=${purchaseId}`);
       
       // Format purchase items with the required structure
       const items = itemsResponse.data.map((item: any) => ({
@@ -296,7 +297,7 @@ const PurchaseForm: React.FC = () => {
 
     try {
       // Search for item as user types
-      const response = await axios.get(`http://168.231.122.33:4000/api/item-exact`, {
+      const response = await axios.get(`${API_URL.BASE}/item-exact`, {
         params: { code: inputValue }
       });
       
@@ -608,17 +609,17 @@ const PurchaseForm: React.FC = () => {
       
       if (isEditing && id) {
         // Update existing purchase using API
-        await axios.put(`${API_PURCHASES}/${id}`, purchaseData);
+        await axios.put(`${API_URL.PURCHASES}/${id}`, purchaseData);
         purchaseId = parseInt(id);
         
         // Delete existing purchase items
-        const existingItems = await axios.get(`${API_PURCHASE_ITEMS}?purchase_id=${purchaseId}`);
+        const existingItems = await axios.get(`${API_URL.PURCHASE_ITEMS}?purchase_id=${purchaseId}`);
         for (const item of existingItems.data) {
-          await axios.delete(`${API_PURCHASE_ITEMS}/${item.id}`);
+          await axios.delete(`${API_URL.PURCHASE_ITEMS}/${item.id}`);
         }
       } else {
         // Create new purchase using API
-        const response = await axios.post(API_PURCHASES, purchaseData);
+        const response = await axios.post(API_URL.PURCHASES, purchaseData);
         purchaseId = response.data.id;
       }
       
@@ -639,7 +640,7 @@ const PurchaseForm: React.FC = () => {
           // Note: per_item_cost will be calculated on the backend
         };
         
-        await axios.post(API_PURCHASE_ITEMS, itemData);
+        await axios.post(API_URL.PURCHASE_ITEMS, itemData);
       }
       
       showAlert(
@@ -694,18 +695,18 @@ const PurchaseForm: React.FC = () => {
       
       if (isEditing && id) {
         // Update existing purchase using API
-        await axios.put(`${API_PURCHASES}/${id}`, purchaseData);
+        await axios.put(`${API_URL.PURCHASES}/${id}`, purchaseData);
         purchaseId = parseInt(id);
         savedPurchase.id = purchaseId;
         
         // Delete existing purchase items
-        const existingItems = await axios.get(`${API_PURCHASE_ITEMS}?purchase_id=${purchaseId}`);
+        const existingItems = await axios.get(`${API_URL.PURCHASE_ITEMS}?purchase_id=${purchaseId}`);
         for (const item of existingItems.data) {
-          await axios.delete(`${API_PURCHASE_ITEMS}/${item.id}`);
+          await axios.delete(`${API_URL.PURCHASE_ITEMS}/${item.id}`);
         }
       } else {
         // Create new purchase using API
-        const response = await axios.post(API_PURCHASES, purchaseData);
+        const response = await axios.post(API_URL.PURCHASES, purchaseData);
         purchaseId = response.data.id;
         savedPurchase.id = purchaseId;
       }
@@ -727,7 +728,7 @@ const PurchaseForm: React.FC = () => {
           // Note: per_item_cost will be calculated on the backend
         };
         
-        await axios.post(API_PURCHASE_ITEMS, itemData);
+        await axios.post(API_URL.PURCHASE_ITEMS, itemData);
       }
       
       showAlert(
@@ -1068,7 +1069,7 @@ const PurchaseForm: React.FC = () => {
                         // Trigger search for this item
                         const searchForItem = async () => {
                           try {
-                            const response = await axios.get(`http://168.231.122.33:4000/api/item-exact`, {
+                            const response = await axios.get(`${API_URL.BASE}/item-exact`, {
                               params: { code: newItemCode.trim() }
                             });
                             

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import Button from '../../components/Button';
 import useAppStore from '../../store/useAppStore';
 import './CreditSalePrint.css';
@@ -125,22 +126,13 @@ const CreditSaleForm: React.FC = () => {
       const searchForNewItem = async () => {
         try {
           // Use the itemLookup utility to find the item
-          const response = await axios.get(`http://168.231.122.33:4000/api/item-exact`, {
+          const response = await axios.get(`${API_URL.BASE}/item-exact`, {
             params: { code: newItemCode.trim() }
           });
           
           if (response.data && response.data.item) {
             // Update the current item with the found item
             updateCurrentItem(response.data.item);
-            
-            // Update the item details display
-            if (response.data.lastCost || response.data.lastPurchaseDate) {
-              setItemDetails({
-                name: response.data.item.item_name,
-                lastCost: response.data.lastCost || 0,
-                lastPurchaseDate: response.data.lastPurchaseDate || 'No purchase'
-              });
-            }
             
             // Focus on the quantity field next
             if (barcodeInputRef.current) {
@@ -275,15 +267,59 @@ const CreditSaleForm: React.FC = () => {
   
   // Handle barcode/item code search
   const handleBarcodeSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value.trim();
+    const inputValue = e.target.value;
     setBarcodeInput(inputValue);
     
-    if (inputValue === '') {
-      // Reset current item if input is cleared
+    if (!inputValue.trim()) {
       setCurrentItem({
         item_id: 0,
         item_name: '',
         item_code: '',
+        quantity: 1,
+        rate: 0,
+        amount: 0,
+        gst_percentage: 0,
+        gst_amount: 0,
+        discount_percentage: 0,
+        discount_amount: 0,
+        total: 0
+      });
+      return;
+    }
+    
+    try {
+      // Search for item as user types
+      const response = await axios.get(`${API_URL.BASE}/item-exact`, {
+        params: { code: inputValue }
+      });
+      
+      if (response.data && response.data.item) {
+        // Update the current item with the found item
+        updateCurrentItem(response.data.item);
+        
+        // Update the item details display
+        if (response.data.lastCost || response.data.lastPurchaseDate) {
+          setItemDetails({
+            name: response.data.item.item_name,
+            lastCost: response.data.lastCost || 0,
+            lastPurchaseDate: response.data.lastPurchaseDate || 'No purchase'
+          });
+        }
+        
+        // Focus on the quantity field next
+        if (barcodeInputRef.current) {
+          barcodeInputRef.current.focus();
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching item:', error);
+      showAlert('Item not found with this code', 'error');
+      
+      // Keep the entered code but reset other fields
+      setCurrentItem({
+        item_id: 0,
+        item_name: '',
+        item_code: barcodeInput,
         quantity: 1,
         rate: 0,
         amount: 0
@@ -294,7 +330,6 @@ const CreditSaleForm: React.FC = () => {
         lastPurchaseDate: ''
       });
     }
-    // No need to do any lookups while typing - we'll do that on Tab/Enter in handleBarcodeKeyDown
   };
   
   // Handle Tab and Enter key for exact item lookup

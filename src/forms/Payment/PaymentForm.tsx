@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import axios from 'axios';
+import { API_URL } from '../../config';
+import useAppStore from '../../store/useAppStore';
 
 // API endpoints
 const API_PARTIES = 'http://168.231.122.33:4000/api/parties';

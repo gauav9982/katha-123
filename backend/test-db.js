@@ -1,4 +1,4 @@
-const db = require('./config/database');
+const db = require('./config/database.cjs');
 
 // Test database connection
 console.log('Testing database connection...');

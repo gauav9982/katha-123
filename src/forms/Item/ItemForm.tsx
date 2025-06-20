@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import useAppStore from '../../store/useAppStore';
 import Button from '../../components/Button';
 
@@ -66,10 +67,6 @@ interface ItemFormData {
 // Common GST rates in India
 const GST_RATES = [0, 5, 12, 18, 28];
 
-const API_CATEGORIES = 'http://168.231.122.33:4000/api/categories';
-const API_ITEMS = 'http://168.231.122.33:4000/api/items';
-const API_GROUPS = 'http://168.231.122.33:4000/api/groups';
-
 // The completely rewritten component
 const ItemForm = () => {
   const navigate = useNavigate();
@@ -114,7 +111,7 @@ const ItemForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(API_CATEGORIES);
+        const res = await axios.get(API_URL.CATEGORIES);
         setCategories(res.data);
       } catch (error) {
         showAlert('Failed to load categories', 'error');
@@ -122,7 +119,7 @@ const ItemForm = () => {
     };
     const fetchGroups = async () => {
       try {
-        const res = await axios.get(API_GROUPS);
+        const res = await axios.get(API_URL.GROUPS);
         setGroups(res.data);
       } catch (error) {
         showAlert('Failed to load groups', 'error');
@@ -135,7 +132,7 @@ const ItemForm = () => {
   useEffect(() => {
     if (isEditMode && id) {
       setLoading(true);
-      axios.get(`${API_ITEMS}/${id}`)
+      axios.get(`${API_URL.ITEMS}/${id}`)
         .then(res => {
           setFormData(res.data);
           setSelectedCategory(
@@ -198,7 +195,7 @@ const ItemForm = () => {
         console.error('Category or category_number missing:', category);
         return;
       }
-      const url = `http://168.231.122.33:4000/api/items-max-code?category_number=${category.category_number}`;
+      const url = `${API_URL.BASE}/items-max-code?category_number=${category.category_number}`;
       console.log('API URL:', url);
       const response = await axios.get(url);
       console.log('API Response:', response.data);
@@ -251,10 +248,10 @@ const ItemForm = () => {
         // First check if company_barcode column exists
         try {
           // This will throw an error if the column doesn't exist
-          axios.get(`${API_ITEMS}/check-barcode`);
+          axios.get(`${API_URL.ITEMS}/check-barcode`);
           
           // If we reach here, the column exists, so check for uniqueness
-          let query = `${API_ITEMS}/check-uniqueness`;
+          let query = `${API_URL.ITEMS}/check-uniqueness`;
           const params = [formData.company_barcode];
           
           // If in edit mode, exclude the current item from the check
@@ -357,10 +354,10 @@ const ItemForm = () => {
     try {
       const lastCategoryId = formData.category_id;
       if (isEditMode && id) {
-        await axios.put(`${API_ITEMS}/${id}`, formData);
+        await axios.put(`${API_URL.ITEMS}/${id}`, formData);
         showAlert('Item updated successfully!', 'success');
       } else {
-        await axios.post(API_ITEMS, formData);
+        await axios.post(API_URL.ITEMS, formData);
         showAlert('Item saved successfully!', 'success');
       }
       

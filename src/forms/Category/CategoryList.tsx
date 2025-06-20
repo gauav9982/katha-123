@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import { 
   PencilIcon, 
   TrashIcon,
@@ -22,8 +23,8 @@ interface Item {
   category_id: number;
 }
 
-const API_CATEGORIES = 'http://168.231.122.33:4000/api/categories';
-const API_ITEMS = 'http://168.231.122.33:4000/api/items';
+const API_CATEGORIES = API_URL + '/api/categories';
+const API_ITEMS = API_URL + '/api/items';
 
 const CategoryList = () => {
   const navigate = useNavigate();

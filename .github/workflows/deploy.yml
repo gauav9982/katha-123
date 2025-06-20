@@ -66,7 +66,7 @@ jobs:
       - name: Deploy Application
         run: |
           echo "Packaging application..."
-          tar -czf deploy.tar.gz dist backend package.json
+          tar -czf deploy.tar.gz dist backend package.json ecosystem.config.cjs
           
           echo "Copying files to server..."
           scp -i ~/.ssh/deploy_key deploy.tar.gz ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/var/www/katha-sales/
@@ -82,13 +82,13 @@ jobs:
             npm install --production;
             
             echo 'Configuring PM2...';
-            pm2 describe katha-sales > /dev/null
+            pm2 describe katha-sales-backend > /dev/null
             if [ \$? -eq 0 ]; then
               echo 'Reloading existing PM2 process...';
-              pm2 reload katha-sales;
+              pm2 reload katha-sales-backend;
             else
               echo 'Starting new PM2 process...';
-              pm2 start backend/index.cjs --name katha-sales;
+              pm2 start ecosystem.config.cjs;
             fi
             pm2 save;
             

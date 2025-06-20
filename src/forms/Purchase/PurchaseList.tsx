@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config';
 import Button from '../../components/Button';
 import useAppStore from '../../store/useAppStore';
 
