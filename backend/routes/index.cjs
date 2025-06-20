@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const db = require('../config/database.cjs');
 
 // Health check route
 router.get('/health', (req, res) => {

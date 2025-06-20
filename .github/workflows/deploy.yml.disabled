@@ -1,0 +1,40 @@
+name: Deploy to Production
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/katha-sales
+            rm -rf dist
+            mkdir dist
+            # The following command is incorrect, it should copy from the runner to the server
+            # This is likely the source of the old code being deployed
+            # Instead of fixing it now, we are disabling the file.
+            # cp -r ./* ./dist/
+            # For now, we will let the manual deploy handle it.
+            # The script will be disabled by renaming the file. 

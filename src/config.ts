@@ -1,24 +1,41 @@
 // API Configuration
+const isDevelopment = import.meta.env.DEV;
+const isLocalDatabase = import.meta.env.VITE_USE_LOCAL_DB === 'true';
+
+// Base URL configuration
+const BASE_URL = isDevelopment && !isLocalDatabase 
+  ? 'http://168.231.122.33/api'  // Live server (via Nginx on port 80)
+  : isDevelopment 
+    ? 'http://localhost:4001'     // Local development
+    : '/api';                     // Production (relative path)
+
 export const API_URL = {
-  BASE: '/api',
-  GROUPS: 'http://www.kathasales.com/api/groups',
-  CATEGORIES: 'http://www.kathasales.com/api/categories',
-  ITEMS: 'http://www.kathasales.com/api/items',
-  PARTIES: 'http://www.kathasales.com/api/parties',
-  PURCHASES: 'http://www.kathasales.com/api/purchases',
-  PURCHASE_ITEMS: 'http://www.kathasales.com/api/purchase-items',
-  CREDITSALES: 'http://www.kathasales.com/api/creditsales',
-  CREDITSALE_ITEMS: 'http://www.kathasales.com/api/creditsale-items',
-  DELIVERY_CHALANS: 'http://www.kathasales.com/api/delivery-chalans',
-  DELIVERY_CHALAN_ITEMS: 'http://www.kathasales.com/api/delivery-chalan-items',
-  PAYMENTS: 'http://www.kathasales.com/api/payments',
-  PENDING_PURCHASES: 'http://www.kathasales.com/api/pending-purchases',
-  CASHSALES: 'http://www.kathasales.com/api/cashsales',
-  CASHSALE_ITEMS: 'http://www.kathasales.com/api/cashsale-items',
+  BASE: BASE_URL,
+  GROUPS: `${BASE_URL}/groups`,
+  CATEGORIES: `${BASE_URL}/categories`,
+  ITEMS: `${BASE_URL}/items`,
+  PARTIES: `${BASE_URL}/parties`,
+  PURCHASES: `${BASE_URL}/purchases`,
+  PURCHASE_ITEMS: `${BASE_URL}/purchase-items`,
+  CREDITSALES: `${BASE_URL}/creditsales`,
+  CREDITSALE_ITEMS: `${BASE_URL}/creditsale-items`,
+  DELIVERY_CHALANS: `${BASE_URL}/delivery-chalans`,
+  DELIVERY_CHALAN_ITEMS: `${BASE_URL}/delivery-chalan-items`,
+  PAYMENTS: `${BASE_URL}/payments`,
+  PENDING_PURCHASES: `${BASE_URL}/pending-purchases`,
+  CASHSALES: `${BASE_URL}/cashsales`,
+  CASHSALE_ITEMS: `${BASE_URL}/cashsale-items`,
   REPORTS: {
-    STOCK_BY_GROUP: 'http://www.kathasales.com/api/reports/stock-by-group',
-    STOCK_BY_CATEGORY: 'http://www.kathasales.com/api/reports/stock-by-category',
-    STOCK_BY_ITEM: 'http://www.kathasales.com/api/reports/stock-by-item',
-    ITEM_TRANSACTIONS: 'http://www.kathasales.com/api/reports/item-transactions'
+    STOCK_BY_GROUP: `${BASE_URL}/reports/stock-by-group`,
+    STOCK_BY_CATEGORY: `${BASE_URL}/reports/stock-by-category`,
+    STOCK_BY_ITEM: `${BASE_URL}/reports/stock-by-item`,
+    ITEM_TRANSACTIONS: `${BASE_URL}/reports/item-transactions`
   }
+};
+
+// Database connection info
+export const DATABASE_INFO = {
+  isLiveServer: isDevelopment && !isLocalDatabase,
+  serverUrl: 'http://168.231.122.33/api', // Check health via Nginx
+  localUrl: 'http://localhost:4001'
 }; 

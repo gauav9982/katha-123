@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const routes = require('./routes');
+const routes = require('./routes/index.cjs');
 const app = express();
 
 // Enable CORS with dynamic origin handling
@@ -14,11 +14,21 @@ app.use(cors({
       'http://kathasales.com',
       'http://www.kathasales.com',
       'https://kathasales.com',
-      'https://www.kathasales.com'
+      'https://www.kathasales.com',
+      'http://168.231.122.33',
+      'http://168.231.122.33:5173',  // Vite dev server
+      'http://localhost:5173',       // Local Vite dev server
+      'http://localhost:3000',       // Local development
+      'http://localhost:4001'        // Local backend
     ];
     
     // Allow any localhost origin
     if (origin.startsWith('http://localhost:')) {
+      return callback(null, true);
+    }
+    
+    // Allow any 168.231.122.33 origin (your server IP)
+    if (origin.startsWith('http://168.231.122.33:')) {
       return callback(null, true);
     }
     
@@ -52,7 +62,7 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 4001;
-app.listen(PORT, 'localhost', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 

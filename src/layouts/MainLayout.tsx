@@ -15,13 +15,64 @@ import {
   BanknotesIcon,
   HomeIcon,
   PhoneIcon,
-  MapPinIcon
+  MapPinIcon,
+  ServerIcon,
+  ComputerDesktopIcon
 } from '@heroicons/react/24/outline';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import AlertMessage from '../components/AlertMessage';
+import { DATABASE_INFO } from '../config';
 import logoSvg from '../assets/logo.svg';
 import logoBmp from '../assets/logo.bmp';
+
+// Database Connection Status Component
+const DatabaseStatus = () => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        const response = await fetch(`${DATABASE_INFO.isLiveServer ? DATABASE_INFO.serverUrl : DATABASE_INFO.localUrl}/`);
+        setIsConnected(response.ok);
+      } catch (error) {
+        setIsConnected(false);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkConnection();
+  }, []);
+
+  if (isChecking) {
+    return (
+      <div className="flex items-center px-3 py-1 text-xs">
+        <div className="animate-spin rounded-full h-3 w-3 border-t-2 border-b-2 border-blue-600 mr-2"></div>
+        Checking connection...
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex items-center px-3 py-1 text-xs rounded-full ${
+      isConnected 
+        ? 'bg-green-100 text-green-800' 
+        : 'bg-red-100 text-red-800'
+    }`}>
+      {DATABASE_INFO.isLiveServer ? (
+        <ServerIcon className="h-3 w-3 mr-1" />
+      ) : (
+        <ComputerDesktopIcon className="h-3 w-3 mr-1" />
+      )}
+      {DATABASE_INFO.isLiveServer ? 'Live Server' : 'Local DB'}
+      <div className={`ml-1 h-2 w-2 rounded-full ${
+        isConnected ? 'bg-green-500' : 'bg-red-500'
+      }`}></div>
+    </div>
+  );
+};
 
 const MainLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -153,6 +204,11 @@ const MainLayout = () => {
             </div>
             
             <div className="ml-4 flex items-center md:ml-6">
+              {/* Database Connection Status */}
+              <div className="mr-4">
+                <DatabaseStatus />
+              </div>
+              
               <div ref={menuRef}>
                 <button
                   onClick={toggleMenu}
