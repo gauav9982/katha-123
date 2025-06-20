@@ -61,8 +61,10 @@ jobs:
             cd backend && npm install --production && cd ..;
             
             echo 'Setting file permissions...';
+            sudo chmod 755 /var/www/katha-sales;
             sudo chown -R www-data:www-data /var/www/katha-sales/dist;
-            sudo chmod -R 755 /var/www/katha-sales/dist;
+            sudo find /var/www/katha-sales/dist -type d -exec chmod 755 {} +;
+            sudo find /var/www/katha-sales/dist -type f -exec chmod 644 {} +;
 
             echo 'Configuring PM2...';
             pm2 describe katha-sales-backend > /dev/null
