@@ -66,7 +66,7 @@ jobs:
       - name: Deploy Application
         run: |
           echo "Packaging application..."
-          tar -czf deploy.tar.gz dist backend package.json ecosystem.config.cjs
+          tar -czf deploy.tar.gz dist backend/ ecosystem.config.cjs package.json package-lock.json
           
           echo "Copying files to server..."
           scp -i ~/.ssh/deploy_key deploy.tar.gz ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/var/www/katha-sales/
