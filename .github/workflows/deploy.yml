@@ -78,6 +78,13 @@ jobs:
             echo 'Extracting files...';
             tar -xzf deploy.tar.gz;
             
+            echo '--- VERIFYING FILE CONTENTS ON SERVER ---';
+            echo '--- ecosystem.config.cjs ---';
+            cat ecosystem.config.cjs;
+            echo '--- backend/index.cjs ---';
+            cat backend/index.cjs;
+            echo '--- VERIFICATION COMPLETE ---';
+            
             echo 'Installing production dependencies...';
             npm install --production;
             
@@ -91,6 +98,9 @@ jobs:
               pm2 start ecosystem.config.cjs;
             fi
             pm2 save;
+            
+            echo 'Restarting Nginx to clear any cache...';
+            sudo systemctl restart nginx;
             
             echo 'Cleaning up...';
             rm deploy.tar.gz;
