@@ -85,8 +85,8 @@ jobs:
             cat backend/index.cjs;
             echo '--- VERIFICATION COMPLETE ---';
             
-            echo 'Installing production dependencies...';
-            npm install --production;
+            echo 'Installing backend dependencies...';
+            cd backend && npm install --production && cd ..;
             
             echo 'Configuring PM2...';
             pm2 describe katha-sales-backend > /dev/null
