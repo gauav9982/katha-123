@@ -25,6 +25,8 @@ import AlertMessage from '../components/AlertMessage';
 import config from '../config';
 import logoSvg from '../assets/logo.svg';
 import axios from 'axios';
+import ItemQuickSearch from '../components/ItemQuickSearch';
+import { FaHome } from 'react-icons/fa';
 
 // Database Connection Status Component
 const DatabaseStatus = () => {
@@ -267,7 +269,20 @@ const MainLayout = () => {
         {/* Page Content */}
         <main className="py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <HomePageContent />
+            {/* Only show the dashboard content on the home page */}
+            {location.pathname === '/' && (
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h1 className="text-2xl font-bold">Dashboard</h1>
+                  <DatabaseStatus />
+                </div>
+
+                {/* Quick Item Search */}
+                <div className="bg-white p-4 rounded-lg shadow-md mt-4">
+                  <ItemQuickSearch />
+                </div>
+              </div>
+            )}
             <Outlet />
           </div>
         </main>
