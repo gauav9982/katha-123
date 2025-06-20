@@ -1,4 +1,86 @@
-# Katha Sales Application
+# Katha Sales - Development & Deployment Guide
+
+This guide provides all the necessary instructions for running, developing, and deploying the Katha Sales application.
+
+---
+
+## 🚀 Development Modes
+
+You can run the application in two distinct modes depending on your needs.
+
+### 1. Fully Local Development
+This mode runs both the frontend and the backend on your local machine, using a local database file. It's ideal for offline work or building features without affecting live data.
+
+**Command:**
+```bash
+npm run start
+```
+- **Frontend:** Runs on a local port (e.g., `http://localhost:3001`).
+- **Backend:** Runs on a local port (e.g., `http://localhost:4000`).
+- **Database:** Uses `backend/katha_sales.db`.
+
+### 2. Live-Connected Development
+This mode runs only the frontend on your local machine, but connects it directly to the live production database. This is perfect for testing new features with real data or debugging live data issues safely.
+
+**Command:**
+```bash
+npm run start:live
+```
+- **Frontend:** Runs on a local port (e.g., `http://localhost:3001`).
+- **Backend:** Connects to the live server URL (`http://168.231.122.33`).
+- **Database:** Uses the production database on the live server.
+
+---
+
+## ☁️ Deployment to Production
+
+Deployment is now fully automated using **GitHub Actions**. You no longer need to use `npm run deploy` or any manual `ssh`/`scp` commands.
+
+The workflow is simple: **commit and push your changes to the `main` branch.**
+
+### Step-by-Step Deployment Process:
+
+**Step 1: Stage Your Changes**
+Add all the files you have changed.
+```bash
+git add .
+```
+
+**Step 2: Commit Your Changes**
+Commit the changes with a clear, descriptive message.
+```bash
+# Replace "Your descriptive message" with a real description
+git commit -m "feat: Your descriptive message about the changes"
+```
+*Some common commit prefixes: `fix:` for bug fixes, `feat:` for new features, `chore:` for maintenance.*
+
+**Step 3: Push to GitHub**
+Push your commit to the `main` branch on GitHub.
+```bash
+git push
+```
+
+That's it! Once you push, GitHub Actions will automatically take over. It will build your application, package it correctly, and deploy it to the server. You can monitor the progress in the "Actions" tab of your GitHub repository.
+
+---
+
+## ⚙️ Initial Setup (One-Time Only)
+
+If you are setting up this project on a new machine, you only need to do this once.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/gauav9982/katha-123.git
+    cd katha-123
+    ```
+2.  **Install all dependencies:**
+    This single command will install both root-level and backend dependencies.
+    ```bash
+    npm run setup
+    ```
+The project is now ready for development. You can use the `npm run start` or `npm run start:live` commands.
+
+## Katha Sales Application
 
 This is a sales management application for Katha.
 

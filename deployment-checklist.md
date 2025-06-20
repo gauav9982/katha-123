@@ -1,3 +1,52 @@
+# Project Setup & Deployment Checklist
+
+This document tracks the initial setup process and outlines the final, correct development and deployment workflow.
+
+## ✅ Initial Setup (Completed)
+
+- [x] Step 1: Configure frontend to dynamically switch between local and live database URLs.
+- [x] Step 2: Configure backend CORS to allow requests from the local development server.
+- [x] Step 3: Create `package.json` scripts (`start`, `start:live`, `dev:local`, `dev:live`) for easy mode switching.
+- [x] Step 4: Fix backend CJS/ESM module conflicts by renaming `.js` files to `.cjs`.
+- [x] Step 5: Fix frontend UI issues by moving Tailwind CSS configs and installing `daisyui`.
+- [x] Step 6: Fix live connection issues by configuring the backend to listen on `0.0.0.0` and correcting port mismatches between Nginx and PM2.
+- [x] Step 7: Fix the automated deployment by updating the GitHub Actions workflow (`.github/workflows/deploy.yml`) to include `ecosystem.config.cjs` and use it for PM2.
+
+## 🚀 Final Workflow
+
+The setup is complete. Here is the simple, day-to-day workflow for development and deployment.
+
+### Development
+There are two ways to run the app during development.
+
+1.  **For Fully Local Development:**
+    *   This uses your local backend and local database.
+    *   **Command:** `npm run start`
+
+2.  **To Connect Local Frontend to Live Database:**
+    *   This is for testing with real, live data.
+    *   **Command:** `npm run start:live`
+
+### Deployment (Pushing Changes to Live Server)
+Deployment is fully automated. You just need to push your code to GitHub.
+
+1.  **Add your changes:**
+    ```bash
+    git add .
+    ```
+
+2.  **Commit your changes with a message:**
+    ```bash
+    git commit -m "Your clear message about what you changed"
+    ```
+
+3.  **Push to the main branch:**
+    ```bash
+    git push
+    ```
+
+After pushing, GitHub Actions will automatically deploy your changes to the live server. You can monitor the progress in the **Actions** tab of your repository.
+
 # Katha Sales Deployment Checklist
 
 ## Local Development Setup
