@@ -15,8 +15,9 @@
     "backend": "node backend/index.cjs",
     "start": "concurrently \"npm run dev:local\" \"npm run backend\"",
     "start:live": "concurrently \"npm run dev:live\" \"npm run backend\"",
-    "deploy": "npm run build && npm run deploy:server",
-    "deploy:server": "scp -r dist/* root@168.231.122.33:/var/www/katha-sales/ && ssh root@168.231.122.33 \"pm2 restart katha-sales-backend && sudo systemctl restart nginx\""
+    "setup": "npm install && cd backend && npm install && cd .. && node backend/setup-database.cjs",
+    "deploy": "npm run build:live && npm run deploy:server",
+    "deploy:server": "scp -r dist/* root@168.231.122.33:/var/www/katha-sales/ && scp -r backend/* root@168.231.122.33:/var/www/katha-sales/backend/ && ssh root@168.231.122.33 \"pm2 restart katha-sales-backend && sudo systemctl restart nginx\""
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
