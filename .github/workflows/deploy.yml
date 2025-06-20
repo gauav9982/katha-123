@@ -60,6 +60,10 @@ jobs:
             echo 'Installing backend dependencies...';
             cd backend && npm install --production && cd ..;
             
+            echo 'Setting file permissions...';
+            sudo chown -R www-data:www-data /var/www/katha-sales/dist;
+            sudo chmod -R 755 /var/www/katha-sales/dist;
+
             echo 'Configuring PM2...';
             pm2 describe katha-sales-backend > /dev/null
             if [ \$? -eq 0 ]; then
