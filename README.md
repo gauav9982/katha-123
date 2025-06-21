@@ -415,3 +415,330 @@ This project is proprietary software developed for Katha Sales business manageme
 **Last Updated:** June 21, 2025  
 **Version:** 1.0.0  
 **Status:** Production Ready ✅ 
+
+---
+
+## 🖥️ New Computer Setup (Development)
+
+### Prerequisites Installation
+
+#### 1. Install Node.js
+```bash
+# Windows માટે:
+# https://nodejs.org/en/ પરથી LTS version download કરો
+# અથવા Chocolatey થી:
+choco install nodejs
+
+# macOS માટે:
+brew install node
+
+# Linux માટે:
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+#### 2. Install Git
+```bash
+# Windows માટે:
+# https://git-scm.com/ પરથી download કરો
+# અથવા Chocolatey થી:
+choco install git
+
+# macOS માટે:
+brew install git
+
+# Linux માટે:
+sudo apt-get install git
+```
+
+#### 3. Install VS Code
+```bash
+# Windows માટે:
+# https://code.visualstudio.com/ પરથી download કરો
+# અથવા Chocolatey થી:
+choco install vscode
+
+# macOS માટે:
+brew install --cask visual-studio-code
+
+# Linux માટે:
+sudo snap install code --classic
+```
+
+#### 4. Install Required VS Code Extensions
+VS Code ખોલ્યા પછી આ extensions install કરો:
+- **Remote - SSH** (server connection માટે)
+- **ES7+ React/Redux/React-Native snippets**
+- **Tailwind CSS IntelliSense**
+- **Auto Rename Tag**
+- **Bracket Pair Colorizer**
+- **GitLens**
+- **Thunder Client** (API testing માટે)
+
+### Complete Setup Process
+
+#### Step 1: Clone Repository
+```bash
+# Desktop પર જાઓ
+cd Desktop
+
+# Repository clone કરો
+git clone https://github.com/gauav9982/katha-123.git
+
+# Project folder માં જાઓ
+cd katha-123
+```
+
+#### Step 2: Install Dependencies
+```bash
+# Root level dependencies
+npm install
+
+# Frontend dependencies
+cd frontend
+npm install
+
+# Backend dependencies
+cd ../backend
+npm install
+
+# Root directory પાછા જાઓ
+cd ..
+```
+
+#### Step 3: Setup Database
+```bash
+# Database setup
+npm run setup
+
+# Database ચેક કરો
+cd backend
+node check-tables.cjs
+cd ..
+```
+
+#### Step 4: Configure Environment
+```bash
+# Frontend config ચેક કરો
+# frontend/src/config.ts ફાઈલ ખોલો
+# API URL સાચી છે કે નહીં ચેક કરો
+
+# Backend config ચેક કરો
+# backend/config/database.cjs ફાઈલ ખોલો
+# Database path સાચી છે કે નહીં ચેક કરો
+```
+
+#### Step 5: Start Development Servers
+```bash
+# Terminal 1: Backend Server
+cd backend
+npm start
+# Server http://localhost:4000 પર ચાલશે
+
+# Terminal 2: Frontend Server (નવો terminal ખોલો)
+cd frontend
+npm run dev
+# Frontend http://localhost:5173 પર ચાલશે
+```
+
+#### Step 6: Test Application
+1. **Frontend Test:** Browser માં http://localhost:5173 ખોલો
+2. **Backend Test:** Browser માં http://localhost:4000/api ખોલો
+3. **Database Test:** કોઈ item add કરવાનો પ્રયાસ કરો
+
+### Development Workflow
+
+#### Daily Development Process
+```bash
+# 1. Latest changes pull કરો
+git pull origin main
+
+# 2. Development servers start કરો
+# Terminal 1:
+cd backend && npm start
+
+# Terminal 2:
+cd frontend && npm run dev
+
+# 3. Changes કરો અને test કરો
+
+# 4. Changes commit કરો
+git add .
+git commit -m "Description of changes"
+
+# 5. GitHub પર push કરો
+git push origin main
+
+# 6. Server પર deploy કરો
+./deploy-github.ps1
+```
+
+#### Testing Changes
+```bash
+# Backend API test
+curl http://localhost:4000/api
+
+# Frontend build test
+cd frontend
+npm run build
+
+# Database test
+cd ../backend
+node check-data.cjs
+```
+
+### Common Issues & Solutions
+
+#### 1. Port Already in Use
+```bash
+# Check ports
+netstat -ano | findstr :4000
+netstat -ano | findstr :5173
+
+# Kill process
+taskkill /PID <process_id> /F
+```
+
+#### 2. Node Modules Issues
+```bash
+# Clear node_modules
+rm -rf node_modules
+rm -rf frontend/node_modules
+rm -rf backend/node_modules
+
+# Reinstall
+npm install
+cd frontend && npm install
+cd ../backend && npm install
+```
+
+#### 3. Database Issues
+```bash
+# Database file permissions
+# Windows માં: Right-click → Properties → Security
+# Linux/macOS માં:
+chmod 664 database/katha_sales.db
+
+# Database reset
+rm database/katha_sales.db
+npm run setup
+```
+
+#### 4. Git Issues
+```bash
+# Git configuration
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# SSH key setup (if needed)
+ssh-keygen -t rsa -b 4096 -C "your.email@example.com"
+# GitHub પર SSH key add કરો
+```
+
+### Development Tips
+
+#### 1. Code Organization
+- **Frontend:** `frontend/src/` માં components, forms, reports
+- **Backend:** `backend/routes/` માં API endpoints
+- **Database:** `backend/setup-database.cjs` માં schema
+
+#### 2. File Structure
+```
+katha-123/
+├── frontend/          # React application
+│   ├── src/
+│   │   ├── components/    # Reusable components
+│   │   ├── forms/         # Form components
+│   │   ├── reports/       # Report components
+│   │   └── config.ts      # Configuration
+│   └── dist/          # Build output
+├── backend/           # Node.js server
+│   ├── routes/        # API routes
+│   ├── config/        # Configuration files
+│   └── setup-database.cjs
+├── database/          # SQLite database
+├── config/            # Server configuration
+└── docs/              # Documentation
+```
+
+#### 3. Development Commands
+```bash
+# Frontend development
+cd frontend
+npm run dev          # Development server
+npm run build        # Production build
+npm run preview      # Preview build
+
+# Backend development
+cd backend
+npm start            # Development server
+node check-tables.cjs # Check database
+node check-data.cjs   # Check data
+
+# Root level
+npm run setup        # Setup database
+npm run install:all  # Install all dependencies
+```
+
+#### 4. Debugging
+```bash
+# Backend logs
+cd backend
+npm start
+# Console માં logs જોવા
+
+# Frontend logs
+cd frontend
+npm run dev
+# Browser console માં logs જોવા
+
+# Database debugging
+cd backend
+node check-tables.cjs
+node check-data.cjs
+```
+
+### Production Deployment
+
+#### First Time Deployment
+```bash
+# 1. GitHub repository setup
+git remote add origin https://github.com/gauav9982/katha-123.git
+git push -u origin main
+
+# 2. Server deployment
+./deploy-github.ps1
+```
+
+#### Regular Deployment
+```bash
+# Changes કર્યા પછી
+git add .
+git commit -m "Changes description"
+git push origin main
+./deploy-github.ps1
+```
+
+### Backup & Recovery
+
+#### Local Backup
+```bash
+# Database backup
+cp database/katha_sales.db database/katha_sales_backup.db
+
+# Code backup
+git archive --format=zip --output=katha-sales-backup.zip main
+```
+
+#### Server Backup
+```bash
+# Server પર backup
+ssh -i "config/deploy_key" root@168.231.122.33
+# Backup location: /var/www/katha-sales-backup/
+```
+
+---
+
+**Last Updated:** June 21, 2025  
+**Version:** 1.0.0  
+**Status:** Production Ready ✅ 
