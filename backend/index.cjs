@@ -3,6 +3,12 @@ const cors = require('cors');
 const routes = require('./routes/index.cjs');
 const app = express();
 
+// Debug logging to understand execution context
+console.log('=== DEBUG: backend/index.cjs is being executed ===');
+console.log('require.main === module:', require.main === module);
+console.log('__filename:', __filename);
+console.log('process.argv:', process.argv);
+
 // Simple CORS configuration - Allow specific origins
 const allowedOrigins = [
   'http://kathasales.com',
