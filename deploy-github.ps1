@@ -1,6 +1,30 @@
 # Katha Sales - GitHub to Server Deployment Script (PowerShell)
 # This script will push fresh code from GitHub and deploy to server
 
+# --- HELPER FUNCTIONS ---
+# Function to print colored output
+function Write-Status {
+    param([string]$Message)
+    Write-Host "[INFO] $Message" -ForegroundColor Blue
+}
+
+function Write-Success {
+    param([string]$Message)
+    Write-Host "[SUCCESS] $Message" -ForegroundColor Green
+}
+
+function Write-Warning {
+    param([string]$Message)
+    Write-Host "[WARNING] $Message" -ForegroundColor Yellow
+}
+
+function Write-Error {
+    param([string]$Message)
+    Write-Host "[ERROR] $Message" -ForegroundColor Red
+}
+# --- END HELPER FUNCTIONS ---
+
+
 Write-Host "🚀 Starting Katha Sales Deployment from GitHub..." -ForegroundColor Green
 
 # --- PRE-DEPLOYMENT: PUSH LOCAL CHANGES TO GITHUB ---
@@ -35,28 +59,6 @@ $SERVER_IP = "168.231.122.33" # CORRECT IP ADDRESS
 $SERVER_USER = "root"
 $SERVER_PATH = "/var/www/katha-sales"
 $BACKUP_PATH = "/var/www/katha-sales-backup"
-
-# Function to print colored output
-function Write-Status {
-    param([string]$Message)
-    Write-Host "[INFO] $Message" -ForegroundColor Blue
-}
-
-function Write-Success {
-    param([string]$Message)
-    Write-Host "[SUCCESS] $Message" -ForegroundColor Green
-}
-
-function Write-Warning {
-    param([string]$Message)
-    Write-Host "[WARNING] $Message" -ForegroundColor Yellow
-}
-
-function Write-Error {
-    param([string]$Message)
-    Write-Host "[ERROR] $Message" -ForegroundColor Red
-}
-
 $KEY_PATH = "C:\Users\DELL\Desktop\katha 123\config\deploy_key"
 
 # Step 1: Create backup of current server
@@ -112,7 +114,18 @@ Write-Success "Database directory ($dbDir) is ready."
 # Step 6: Setup database
 Write-Status "Setting up database..."
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SERVER_PATH && npm run setup"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Database setup script failed. Check the logs on the server."
+    exit 1
+}
 Write-Success "Database setup completed"
+
+# Step 6.5: Set Correct Permissions on Database
+Write-Status "Setting permissions on the database file..."
+$dbFile = "$SERVER_PATH/database/katha_sales.db"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chown www-data:www-data $dbFile && sudo chmod 664 $dbFile"
+Write-Success "Database permissions set correctly."
+
 
 # Step 7: Build frontend
 Write-Status "Building frontend..."
