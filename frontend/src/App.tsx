@@ -139,55 +139,55 @@ function App() {
             <Route index element={<HomePageContent />} />
             
             {/* Implemented Form Routes */}
-            <Route path="/forms/group" element={<GroupForm />} />
-            <Route path="/forms/category" element={<CategoryForm />} />
-            <Route path="/forms/item" element={<ItemForm />} />
-            <Route path="/forms/item/edit/:id" element={<ItemForm />} />
+            <Route path="forms/group" element={<GroupForm />} />
+            <Route path="forms/category" element={<CategoryForm />} />
+            <Route path="forms/item" element={<ItemForm />} />
+            <Route path="forms/item/edit/:id" element={<ItemForm />} />
             
             {/* Purchase Routes - main focus of this app */}
-            <Route path="/forms/purchase" element={<PurchaseForm />} />
-            <Route path="/forms/purchase/:id" element={<PurchaseForm />} />
+            <Route path="forms/purchase" element={<PurchaseForm />} />
+            <Route path="forms/purchase/:id" element={<PurchaseForm />} />
             
             {/* Cash Sale Routes */}
-            <Route path="/forms/cash-sale" element={<CashSaleForm />} />
-            <Route path="/forms/cash-sale/:id" element={<CashSaleForm />} />
+            <Route path="forms/cash-sale" element={<CashSaleForm />} />
+            <Route path="forms/cash-sale/:id" element={<CashSaleForm />} />
             
             {/* Credit Sale Routes */}
-            <Route path="/forms/credit-sale" element={<CreditSaleForm />} />
-            <Route path="/forms/credit-sale/:id" element={<CreditSaleForm />} />
+            <Route path="forms/credit-sale" element={<CreditSaleForm />} />
+            <Route path="forms/credit-sale/:id" element={<CreditSaleForm />} />
             
             {/* Delivery Chalan Routes */}
-            <Route path="/forms/delivery-chalan-form" element={<DeliveryChalanForm />} />
-            <Route path="/forms/delivery-chalan-form/:id" element={<DeliveryChalanForm />} />
+            <Route path="forms/delivery-chalan-form" element={<DeliveryChalanForm />} />
+            <Route path="forms/delivery-chalan-form/:id" element={<DeliveryChalanForm />} />
             
             {/* Placeholder Routes for unimplemented forms */}
-            <Route path="/forms/cash-sales" element={<PlaceholderForm />} />
-            <Route path="/forms/credit-sales" element={<PlaceholderForm />} />
-            <Route path="/forms/delivery-challan" element={<PlaceholderForm />} />
-            <Route path="/forms/party" element={<PartyForm />} />
-            <Route path="/forms/payment" element={<PaymentForm />} />
-            <Route path="/forms/receipt" element={<ReceiptForm />} />
+            <Route path="forms/cash-sales" element={<PlaceholderForm />} />
+            <Route path="forms/credit-sales" element={<PlaceholderForm />} />
+            <Route path="forms/delivery-challan" element={<PlaceholderForm />} />
+            <Route path="forms/party" element={<PartyForm />} />
+            <Route path="forms/payment" element={<PaymentForm />} />
+            <Route path="forms/receipt" element={<ReceiptForm />} />
             
             {/* List Routes */}
-            <Route path="/lists/group-list" element={<GroupList />} />
-            <Route path="/lists/category-list" element={<CategoryList />} />
-            <Route path="/lists/item-list" element={<ItemList />} />
-            <Route path="/lists/purchase-list" element={<PurchaseList />} />
-            <Route path="/lists/cashsale-list" element={<CashSaleList />} />
-            <Route path="/lists/creditsale-list" element={<CreditSaleList />} />
-            <Route path="/lists/delivery-chalan-list" element={<DeliveryChalanList />} />
-            <Route path="/lists/cash-sales-list" element={<CashSaleList />} />
-            <Route path="/lists/credit-sales-list" element={<CreditSaleList />} />
-            <Route path="/lists/challan-list" element={<PlaceholderForm />} />
-            <Route path="/lists/payment-list" element={<PartyList />} />
-            <Route path="/lists/receipt-list" element={<PartyList />} />
+            <Route path="lists/group-list" element={<GroupList />} />
+            <Route path="lists/category-list" element={<CategoryList />} />
+            <Route path="lists/item-list" element={<ItemList />} />
+            <Route path="lists/purchase-list" element={<PurchaseList />} />
+            <Route path="lists/cashsale-list" element={<CashSaleList />} />
+            <Route path="lists/creditsale-list" element={<CreditSaleList />} />
+            <Route path="lists/delivery-chalan-list" element={<DeliveryChalanList />} />
+            <Route path="lists/cash-sales-list" element={<CashSaleList />} />
+            <Route path="lists/credit-sales-list" element={<CreditSaleList />} />
+            <Route path="lists/challan-list" element={<PlaceholderForm />} />
+            <Route path="lists/payment-list" element={<PartyList />} />
+            <Route path="lists/receipt-list" element={<PartyList />} />
             
             {/* Report Routes */}
-            <Route path="/reports/stock" element={<StockReport />} />
-            <Route path="/reports/item-transactions" element={<ItemTransactionReport />} />
+            <Route path="reports/stock" element={<StockReport />} />
+            <Route path="reports/item-transactions" element={<ItemTransactionReport />} />
             
             {/* Fix for incorrect routes */}
-            <Route path="/lists/purchase" element={<Navigate to="/lists/purchase-list" replace />} />
+            <Route path="lists/purchase" element={<Navigate to="/dashboard/lists/purchase-list" replace />} />
           </Route>
           
           {/* Catch-all route */}
