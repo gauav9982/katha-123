@@ -91,6 +91,43 @@ const HomePage = () => {
         ))}
       </div>
 
+      {/* Floating Transparent Balloons */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`balloon-${i}`}
+            className="absolute animate-float"
+            style={{
+              left: `${10 + Math.random() * 80}%`,
+              top: `${20 + Math.random() * 60}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          >
+            {/* Balloon */}
+            <div 
+              className={`w-16 h-20 rounded-full opacity-20 blur-sm ${
+                i % 4 === 0 ? 'bg-gradient-to-b from-pink-400/30 to-pink-600/30' :
+                i % 4 === 1 ? 'bg-gradient-to-b from-blue-400/30 to-blue-600/30' :
+                i % 4 === 2 ? 'bg-gradient-to-b from-yellow-400/30 to-yellow-600/30' :
+                'bg-gradient-to-b from-purple-400/30 to-purple-600/30'
+              }`}
+              style={{
+                transform: `scale(${0.8 + Math.random() * 0.4})`,
+                filter: 'blur(1px)'
+              }}
+            ></div>
+            {/* Balloon String */}
+            <div 
+              className="absolute top-full left-1/2 transform -translate-x-1/2 w-px h-8 bg-white/20"
+              style={{
+                transform: `translateX(-50%) rotate(${Math.random() * 20 - 10}deg)`
+              }}
+            ></div>
+          </div>
+        ))}
+      </div>
+
       {/* Header */}
       <header className="relative z-10 bg-white/10 backdrop-blur-lg border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
