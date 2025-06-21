@@ -154,6 +154,11 @@ ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SERVER_PATH && pm2 start ecosyst
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo systemctl start nginx"
 Write-Success "Services started"
 
+# Step 10.5: Save the PM2 process list
+Write-Status "Saving the current PM2 process list..."
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "pm2 save"
+Write-Success "PM2 process list saved."
+
 # Step 11: Verify deployment
 Write-Status "Verifying deployment... Waiting 5 seconds for services to initialize."
 Start-Sleep -Seconds 5
