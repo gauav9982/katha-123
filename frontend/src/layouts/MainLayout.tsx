@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Bars3Icon, 
   XMarkIcon,
@@ -17,7 +17,8 @@ import {
   PhoneIcon,
   MapPinIcon,
   ServerIcon,
-  ComputerDesktopIcon
+  ComputerDesktopIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
@@ -85,6 +86,7 @@ const MainLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const companyInfo = useSelector((state: RootState) => state.app.companyInfo);
   const menuRef = useRef<HTMLDivElement>(null);
   
@@ -109,43 +111,48 @@ const MainLayout = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleLogout = () => {
+    // Navigate back to main website
+    navigate('/');
+  };
   
   const sidebarLinks = [
-    { name: 'Home', path: '/', icon: HomeIcon },
-    { name: 'Group', path: '/forms/group', icon: UserGroupIcon },
-    { name: 'Category', path: '/forms/category', icon: TagIcon },
-    { name: 'Item', path: '/forms/item', icon: CubeIcon },
-    { name: 'Purchase', path: '/forms/purchase', icon: ShoppingCartIcon },
-    { name: 'Cash Sales', path: '/forms/cash-sale', icon: CurrencyRupeeIcon },
-    { name: 'Credit Sales', path: '/forms/credit-sale', icon: CurrencyRupeeIcon },
-    { name: 'Delivery Chalan', path: '/forms/delivery-chalan-form', icon: TruckIcon },
-    { name: 'Reports', path: '/reports/stock', icon: ChartBarIcon },
-    { name: 'Party Account', path: '/forms/party', icon: UserGroupIcon },
-    { name: 'Party List', path: '/lists/payment-list', icon: UserGroupIcon },
-    { name: 'Payment', path: '/forms/payment', icon: BanknotesIcon },
-    { name: 'Receipt', path: '/forms/receipt', icon: ReceiptRefundIcon },
+    { name: 'Dashboard', path: '/dashboard', icon: HomeIcon },
+    { name: 'Group', path: '/dashboard/forms/group', icon: UserGroupIcon },
+    { name: 'Category', path: '/dashboard/forms/category', icon: TagIcon },
+    { name: 'Item', path: '/dashboard/forms/item', icon: CubeIcon },
+    { name: 'Purchase', path: '/dashboard/forms/purchase', icon: ShoppingCartIcon },
+    { name: 'Cash Sales', path: '/dashboard/forms/cash-sale', icon: CurrencyRupeeIcon },
+    { name: 'Credit Sales', path: '/dashboard/forms/credit-sale', icon: CurrencyRupeeIcon },
+    { name: 'Delivery Chalan', path: '/dashboard/forms/delivery-chalan-form', icon: TruckIcon },
+    { name: 'Reports', path: '/dashboard/reports/stock', icon: ChartBarIcon },
+    { name: 'Party Account', path: '/dashboard/forms/party', icon: UserGroupIcon },
+    { name: 'Party List', path: '/dashboard/lists/payment-list', icon: UserGroupIcon },
+    { name: 'Payment', path: '/dashboard/forms/payment', icon: BanknotesIcon },
+    { name: 'Receipt', path: '/dashboard/forms/receipt', icon: ReceiptRefundIcon },
   ];
   
   const topMenuLinks = [
-    { name: 'Group', path: '/forms/group' },
-    { name: 'Category', path: '/forms/category' },
-    { name: 'Item', path: '/forms/item' },
-    { name: 'Group List', path: '/lists/group-list' },
-    { name: 'Category List', path: '/lists/category-list' },
-    { name: 'Item List', path: '/lists/item-list' },
-    { name: 'Stock Report', path: '/reports/stock' },
-    { name: 'Item Transactions', path: '/reports/item-transactions' },
+    { name: 'Group', path: '/dashboard/forms/group' },
+    { name: 'Category', path: '/dashboard/forms/category' },
+    { name: 'Item', path: '/dashboard/forms/item' },
+    { name: 'Group List', path: '/dashboard/lists/group-list' },
+    { name: 'Category List', path: '/dashboard/lists/category-list' },
+    { name: 'Item List', path: '/dashboard/lists/item-list' },
+    { name: 'Stock Report', path: '/dashboard/reports/stock' },
+    { name: 'Item Transactions', path: '/dashboard/reports/item-transactions' },
   ];
   
   const bottomMenuLinks = [
-    { name: 'Purchase', path: '/forms/purchase' },
-    { name: 'Cash Sales', path: '/forms/cash-sale' },
-    { name: 'Credit Sales', path: '/forms/credit-sale' },
-    { name: 'Delivery Chalan', path: '/forms/delivery-chalan-form' },
-    { name: 'Purchase List', path: '/lists/purchase-list' },
-    { name: 'Cash Sales List', path: '/lists/cashsale-list' },
-    { name: 'Credit Sales List', path: '/lists/creditsale-list' },
-    { name: 'Delivery Chalan List', path: '/lists/delivery-chalan-list' },
+    { name: 'Purchase', path: '/dashboard/forms/purchase' },
+    { name: 'Cash Sales', path: '/dashboard/forms/cash-sale' },
+    { name: 'Credit Sales', path: '/dashboard/forms/credit-sale' },
+    { name: 'Delivery Chalan', path: '/dashboard/forms/delivery-chalan-form' },
+    { name: 'Purchase List', path: '/dashboard/lists/purchase-list' },
+    { name: 'Cash Sales List', path: '/dashboard/lists/cashsale-list' },
+    { name: 'Credit Sales List', path: '/dashboard/lists/creditsale-list' },
+    { name: 'Delivery Chalan List', path: '/dashboard/lists/delivery-chalan-list' },
   ];
   
   return (
@@ -165,21 +172,34 @@ const MainLayout = () => {
           </button>
         </div>
         
-        <nav className="mt-5 px-2">
-          {sidebarLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === link.path
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
+        <nav className="mt-5 px-2 flex flex-col h-full">
+          <div className="flex-1">
+            {sidebarLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                  location.pathname === link.path
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <link.icon className="mr-4 h-6 w-6" />
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          
+          {/* Logout Button at bottom */}
+          <div className="border-t border-gray-200 pt-4 pb-4">
+            <button
+              onClick={handleLogout}
+              className="group flex items-center px-2 py-2 text-base font-medium rounded-md text-red-600 hover:bg-red-50 hover:text-red-700 w-full"
             >
-              <link.icon className="mr-4 h-6 w-6" />
-              {link.name}
-            </Link>
-          ))}
+              <ArrowRightOnRectangleIcon className="mr-4 h-6 w-6" />
+              Logout
+            </button>
+          </div>
         </nav>
       </div>
       
@@ -258,6 +278,17 @@ const MainLayout = () => {
                           {link.name}
                         </Link>
                       ))}
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          handleLogout();
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        role="menuitem"
+                      >
+                        Logout
+                      </button>
                     </div>
                   </div>
                 )}
@@ -269,20 +300,6 @@ const MainLayout = () => {
         {/* Page Content */}
         <main className="py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Only show the dashboard content on the home page */}
-            {location.pathname === '/' && (
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h1 className="text-2xl font-bold">Dashboard</h1>
-                  <DatabaseStatus />
-                </div>
-
-                {/* Quick Item Search */}
-                <div className="bg-white p-4 rounded-lg shadow-md mt-4">
-                  <ItemQuickSearch />
-                </div>
-              </div>
-            )}
             <Outlet />
           </div>
         </main>

@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import ItemQuickSearch from './components/ItemQuickSearch';
+import HomePage from './components/HomePage';
 
 // Lazy load form components
 const GroupForm = lazy(() => import('./forms/Group/GroupForm'));
@@ -72,8 +73,8 @@ const PlaceholderForm = () => (
   </div>
 );
 
-// Home Page component
-const HomePage = () => (
+// Home Page component - Updated to use new HomePage
+const HomePageContent = () => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <ItemQuickSearch />
   </div>
@@ -91,20 +92,21 @@ function App() {
     // Log routes for debugging
     console.log('Available routes:', [
       '/',
-      '/forms/group',
-      '/forms/category',
-      '/forms/item',
-      '/forms/purchase',
-      '/forms/cash-sale',
-      '/forms/credit-sale',
-      '/forms/delivery-chalan-form',
-      '/lists/group-list',
-      '/lists/category-list', 
-      '/lists/item-list',
-      '/lists/purchase-list',
-      '/lists/cashsale-list',
-      '/lists/creditsale-list',
-      '/lists/delivery-chalan-list'
+      '/dashboard',
+      '/dashboard/forms/group',
+      '/dashboard/forms/category',
+      '/dashboard/forms/item',
+      '/dashboard/forms/purchase',
+      '/dashboard/forms/cash-sale',
+      '/dashboard/forms/credit-sale',
+      '/dashboard/forms/delivery-chalan-form',
+      '/dashboard/lists/group-list',
+      '/dashboard/lists/category-list', 
+      '/dashboard/lists/item-list',
+      '/dashboard/lists/purchase-list',
+      '/dashboard/lists/cashsale-list',
+      '/dashboard/lists/creditsale-list',
+      '/dashboard/lists/delivery-chalan-list'
     ]);
     
     // API server check
@@ -128,9 +130,13 @@ function App() {
     <Router>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          <Route path="/" element={<MainLayout />}>
-            {/* Home route with QuickSearch component */}
-            <Route index element={<HomePage />} />
+          {/* Main Website Page */}
+          <Route path="/" element={<HomePage />} />
+          
+          {/* Dashboard/Application Routes */}
+          <Route path="/dashboard" element={<MainLayout />}>
+            {/* Dashboard home with QuickSearch component */}
+            <Route index element={<HomePageContent />} />
             
             {/* Implemented Form Routes */}
             <Route path="/forms/group" element={<GroupForm />} />
