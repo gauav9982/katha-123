@@ -172,6 +172,11 @@ if ($frontendCheck -match "katha") {
     Write-Warning "Frontend check failed"
 }
 
+# Step 12: Show recent logs for debugging
+Write-Status "Showing recent logs from the backend..."
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "pm2 logs katha-sales-backend --lines 50 --nostream"
+
+
 Write-Success "🎉 Deployment completed successfully!"
 Write-Status "Your application is now live at: http://168.231.122.33"
 Write-Status "Backup is available at: $BACKUP_PATH" 
