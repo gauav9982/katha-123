@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const dbPath = '/var/www/katha-sales/backend/katha_sales.db';
+// Database path - pointing to the database folder
+const dbPath = path.join(__dirname, '..', '..', 'database', 'katha_sales.db');
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {

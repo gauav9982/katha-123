@@ -1,8 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-// Database file path
-const dbPath = path.join(__dirname, 'katha_sales.db');
+// Database file path - pointing to the database folder
+const dbPath = path.join(__dirname, '..', 'database', 'katha_sales.db');
 
 // Create database connection
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -15,6 +15,20 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Create tables
 const createTables = () => {
+  // Groups table
+  db.run(`CREATE TABLE IF NOT EXISTS tbl_groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_number INTEGER UNIQUE NOT NULL,
+    group_name TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) {
+      console.error('Error creating groups table:', err.message);
+    } else {
+      console.log('Groups table created or already exists.');
+    }
+  });
+
   // Categories table
   db.run(`CREATE TABLE IF NOT EXISTS tbl_categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
