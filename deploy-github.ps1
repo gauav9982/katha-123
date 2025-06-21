@@ -66,11 +66,11 @@ Write-Status "Creating backup of current server..."
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo mkdir -p $BACKUP_PATH; sudo cp -r $SERVER_PATH/* $BACKUP_PATH/ 2>/dev/null; true"
 Write-Success "Backup created at $BACKUP_PATH"
 
-# Step 2: Stop services
-Write-Status "Stopping services..."
-ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "pm2 stop katha-sales-backend 2>/dev/null; true"
+# Step 2: Stop and delete all old services for a clean slate
+Write-Status "Stopping and deleting all old PM2 services..."
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "pm2 delete all 2>/dev/null; true"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo systemctl stop nginx 2>/dev/null; true"
-Write-Success "Services stopped"
+Write-Success "All services stopped."
 
 # Step 3 & 4: Clean server directory and clone fresh code
 Write-Status "Cleaning server directory and cloning fresh code from GitHub..."
