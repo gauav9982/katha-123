@@ -155,7 +155,7 @@ ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo systemctl start nginx"
 Write-Success "Services started"
 
 # Step 11: Verify deployment
-Write-Status "Verifying deployment..."
+Write-Status "Verifying deployment... Waiting 5 seconds for services to initialize."
 Start-Sleep -Seconds 5
 
 $backendCheck = ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "curl -s http://localhost:4000/api/health"
