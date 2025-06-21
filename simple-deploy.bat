@@ -14,6 +14,6 @@ echo ========================================
 echo.
 echo Please check the output above for any errors.
 echo If successful, your application is live at:
-echo http://154.26.138.134
+echo http://168.231.122.33
 echo.
 pause 

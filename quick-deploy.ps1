@@ -4,9 +4,10 @@
 Write-Host "🚀 Quick Deploy - Katha Sales" -ForegroundColor Green
 
 # Server details
-$SERVER_IP = "154.26.138.134"
+$SERVER_IP = "168.231.122.33" # CORRECT IP ADDRESS
 $SERVER_USER = "root"
 $SERVER_PATH = "/var/www/katha-sales"
+$KEY_PATH = "C:\Users\DELL\Desktop\katha 123\config\deploy_key"
 
 # Function to check if command was successful
 function Test-Command {
@@ -22,7 +23,7 @@ function Test-Command {
 
 # Step 1: Git Pull
 Write-Host "🔄 Pulling latest code from GitHub..." -ForegroundColor Blue
-ssh $SERVER_USER@$SERVER_IP "cd $SERVER_PATH; git pull origin main"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SERVER_PATH; git pull origin main"
 if (-not (Test-Command "Git Pull")) { 
     Write-Host "❌ Git pull failed. Please check if your local code is pushed to GitHub." -ForegroundColor Red
     exit 1 
@@ -30,7 +31,7 @@ if (-not (Test-Command "Git Pull")) {
 
 # Step 2: Install dependencies
 Write-Host "📦 Installing dependencies (if any)..." -ForegroundColor Blue
-ssh $SERVER_USER@$SERVER_IP "cd $SERVER_PATH; npm run install:all"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SERVER_PATH; npm run install:all"
 if (-not (Test-Command "Dependencies Install")) { 
     Write-Host "❌ Dependencies install failed." -ForegroundColor Red
     exit 1 
@@ -38,7 +39,7 @@ if (-not (Test-Command "Dependencies Install")) {
 
 # Step 3: Build frontend
 Write-Host "🔨 Building frontend..." -ForegroundColor Blue
-ssh $SERVER_USER@$SERVER_IP "cd $SERVER_PATH/frontend; npm run build"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SERVER_PATH/frontend; npm run build"
 if (-not (Test-Command "Frontend Build")) { 
     Write-Host "❌ Frontend build failed." -ForegroundColor Red
     exit 1 
@@ -46,9 +47,9 @@ if (-not (Test-Command "Frontend Build")) {
 
 # Step 4: Restart services
 Write-Host "🔄 Restarting services..." -ForegroundColor Blue
-ssh $SERVER_USER@$SERVER_IP "cd $SERVER_PATH; pm2 restart katha-sales-backend --update-env"
-ssh $SERVER_USER@$SERVER_IP "sudo systemctl reload nginx"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SERVER_PATH; pm2 restart katha-sales-backend --update-env"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo systemctl reload nginx"
 
 Write-Host "🎉 Deployment completed successfully!" -ForegroundColor Green
 Write-Host "🌐 Check your application at: http://$SERVER_IP" -ForegroundColor Yellow
-Write-Host "📱 You can now use the application with full data functionality!" -ForegroundColor Cyan 
+Write-Host 'You can now use the application with full data functionality!' -ForegroundColor Cyan 
