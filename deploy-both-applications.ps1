@@ -98,14 +98,14 @@ Write-Host "Step 10: Verifying deployment..." -ForegroundColor Blue
 Start-Sleep -Seconds 10
 
 $backendCheck = ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "curl -s http://localhost:4000/api/health"
-if ($backendCheck -match "ok") {
+if ($backendCheck -match "healthy") {
     Write-Host "Katha Sales backend is running" -ForegroundColor Green
 } else {
     Write-Host "Katha Sales backend check failed" -ForegroundColor Yellow
 }
 
 $schoolCheck = ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "curl -s http://localhost:4001/api/health"
-if ($schoolCheck -match "ok") {
+if ($schoolCheck -match "healthy") {
     Write-Host "School backend is running" -ForegroundColor Green
 } else {
     Write-Host "School backend check failed" -ForegroundColor Yellow
