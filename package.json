@@ -4,9 +4,12 @@
   "description": "Complete sales management system with frontend and backend",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
+    "dev:school-backend": "cd school/backend && npm start",
+    "dev:school-frontend": "cd school/frontend && npm run dev",
+    "dev:all": "concurrently --names \"MAIN_BE,MAIN_FE,SCHOOL_BE,SCHOOL_FE\" \"npm:dev:backend\" \"npm:dev:frontend\" \"npm:dev:school-backend\" \"npm:dev:school-frontend\"",
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
@@ -15,10 +18,22 @@
     "deploy:github:win": "powershell -ExecutionPolicy Bypass -File deploy-github.ps1",
     "deploy:manual": "echo 'Please follow docs/GITHUB_DEPLOYMENT.md for manual deployment'"
   },
-  "keywords": ["sales", "inventory", "management", "react", "nodejs"],
+  "keywords": [
+    "sales",
+    "inventory",
+    "management",
+    "react",
+    "nodejs"
+  ],
   "author": "Katha Sales",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.2",
+    "shell-quote": "^1.8.3",
+    "tree-kill": "^1.2.2",
+    "yargs": "^17.7.2"
   }
-} 
+}

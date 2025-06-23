@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database.cjs');
+const getDb = require('../config/database.cjs').getDatabase;
 
 // Base route for API health check
 router.get('/', (req, res) => {
@@ -1179,6 +1180,86 @@ router.get('/last-purchase-by-code', (req, res) => {
     }
     
     res.json(row);
+  });
+});
+
+// Get all cities (for login dropdown)
+router.get('/cities', (req, res) => {
+  const query = 'SELECT id, name FROM cities ORDER BY name';
+  
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching cities:', err);
+      res.status(500).json({ success: false, error: 'Database error' });
+      return;
+    }
+    res.json({ success: true, data: rows });
+  });
+});
+
+// Add a new city
+router.post('/cities', (req, res) => {
+  const { name, username, password } = req.body;
+  if (!name || !username || !password) {
+    return res.status(400).json({ error: 'City name, username, and password are required' });
+  }
+
+  const query = 'INSERT INTO cities (name, username, password) VALUES (?, ?, ?)';
+  
+  db.run(query, [name, username, password], function (err) {
+    if (err) {
+      console.error('Error adding city:', err);
+      if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        return res.status(409).json({ error: 'City or username already exists' });
+      }
+      res.status(500).json({ error: 'Database error' });
+      return;
+    }
+    res.status(201).json({ id: this.lastID, name });
+  });
+});
+
+// Delete a city
+router.delete('/cities/:id', (req, res) => {
+  const { id } = req.params;
+  const query = 'DELETE FROM cities WHERE id = ?';
+  
+  db.run(query, [id], function (err) {
+    if (err) {
+      console.error('Error deleting city:', err);
+      res.status(500).json({ success: false, error: 'Database error' });
+      return;
+    }
+    
+    if (this.changes > 0) {
+      res.json({ success: true, message: 'City deleted' });
+    } else {
+      res.status(404).json({ success: false, error: 'City not found' });
+    }
+  });
+});
+
+// City Login
+router.post('/cities/login', (req, res) => {
+  const { cityName, username, password } = req.body;
+  if (!cityName || !username || !password) {
+    return res.status(400).json({ success: false, error: 'City, username, and password are required' });
+  }
+
+  const query = 'SELECT * FROM cities WHERE name = ? AND username = ? AND password = ?';
+  
+  db.get(query, [cityName, username, password], (err, row) => {
+    if (err) {
+      console.error('Error during city login:', err);
+      res.status(500).json({ success: false, error: 'Database error' });
+      return;
+    }
+    
+    if (row) {
+      res.json({ success: true, data: { id: row.id, name: row.name } });
+    } else {
+      res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
   });
 });
 

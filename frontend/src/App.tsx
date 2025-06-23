@@ -1,4 +1,4 @@
-import { useEffect, Suspense, lazy } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { 
   BrowserRouter as Router, 
   Routes, 
@@ -87,12 +87,31 @@ const LoadingFallback = () => (
   </div>
 );
 
+// School Application Redirect Component
+const SchoolRedirect = () => {
+  React.useEffect(() => {
+    // Redirect to school application
+    window.location.href = 'http://localhost:5179';
+  }, []);
+  
+  return (
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-green-900 via-blue-900 to-purple-900">
+      <div className="text-center text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
+        <h2 className="text-2xl font-bold mb-2">Redirecting to School System...</h2>
+        <p className="text-white/80">Please wait while we redirect you to the School Salary Management System.</p>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   useEffect(() => {
     // Log routes for debugging
     console.log('Available routes:', [
       '/',
       '/dashboard',
+      '/school', // New school route
       '/dashboard/forms/group',
       '/dashboard/forms/category',
       '/dashboard/forms/item',
@@ -132,6 +151,9 @@ function App() {
         <Routes>
           {/* Main Website Page */}
           <Route path="/" element={<HomePage />} />
+          
+          {/* School Application Route */}
+          <Route path="/school" element={<SchoolRedirect />} />
           
           {/* Dashboard/Application Routes */}
           <Route path="/dashboard" element={<MainLayout />}>

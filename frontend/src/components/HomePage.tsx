@@ -14,11 +14,18 @@ import {
   StarIcon,
   RocketLaunchIcon,
   ChartBarIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  AcademicCapIcon,
+  Cog6ToothIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
+import AdminPanel from './AdminPanel';
+import SchoolLogin from './SchoolLogin';
 
 const HomePage = () => {
   const [showLogin, setShowLogin] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showSchoolLogin, setShowSchoolLogin] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,6 +47,30 @@ const HomePage = () => {
     } else {
       setLoginError('Invalid username or password');
     }
+  };
+
+  const handleSchoolLoginSuccess = (cityId: string, cityName: string) => {
+    console.log(`Login successful for ${cityName} (ID: ${cityId}). Storing session and redirecting.`);
+    
+    // Store session data for school app
+    const sessionData = {
+      cityName: cityName,
+      loginTime: new Date().toISOString()
+    };
+    
+    // Store in localStorage for school app
+    localStorage.setItem('schoolLoginSession', JSON.stringify(sessionData));
+    
+    // Also store the old format for compatibility
+    localStorage.setItem('schoolCityId', cityId);
+    localStorage.setItem('schoolCityName', cityName);
+    
+    setShowSchoolLogin(false); // Close the modal
+    
+    // Show success message and redirect
+    setTimeout(() => {
+      window.location.href = 'http://localhost:5179/dashboard';
+    }, 500);
   };
 
   const bankDetails = [
@@ -150,21 +181,20 @@ const HomePage = () => {
 
             {/* Top Menu */}
             <div className="flex items-center space-x-4">
-              {/* Bank Details Button */}
+              {/* Only School System Button */}
               <button
-                onClick={() => setShowBankDetails(!showBankDetails)}
-                className="group relative px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+                onClick={() => setShowSchoolLogin(true)}
+                className="group relative px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center">
-                  <BanknotesIcon className="h-5 w-5 mr-2" />
-                  Bank Details
+                  <AcademicCapIcon className="h-5 w-5 mr-2" />
+                  School System
                 </div>
               </button>
-
-              {/* Account Button */}
+              {/* Account Button Restored */}
               <button
-                onClick={() => setShowLogin(true)}
+                onClick={() => window.open('http://localhost:5173/account', '_blank')}
                 className="group relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -188,25 +218,20 @@ const HomePage = () => {
               </h2>
               <button
                 onClick={() => setShowBankDetails(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <XMarkIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {bankDetails.map((bank, index) => (
-                <div key={index} className={`bg-gradient-to-br ${bank.color} text-white rounded-2xl p-6 shadow-xl transform hover:scale-105 transition-all duration-300`}>
-                  <div className="flex items-center mb-4">
-                    <BanknotesIcon className="h-8 w-8 mr-3" />
-                    <h3 className="font-bold text-xl">{bank.name}</h3>
-                  </div>
+                <div key={index} className={`bg-gradient-to-br ${bank.color} p-6 rounded-2xl text-white shadow-xl transform hover:scale-105 transition-all duration-300`}>
+                  <h3 className="text-xl font-bold mb-4">{bank.name}</h3>
                   <div className="space-y-2 text-sm">
-                    <div><span className="font-semibold">Account:</span> {bank.accountNumber}</div>
-                    <div><span className="font-semibold">IFSC:</span> {bank.ifscCode}</div>
-                    <div><span className="font-semibold">Branch:</span> {bank.branch}</div>
+                    <p><span className="font-semibold">Account:</span> {bank.accountNumber}</p>
+                    <p><span className="font-semibold">IFSC:</span> {bank.ifscCode}</p>
+                    <p><span className="font-semibold">Branch:</span> {bank.branch}</p>
                   </div>
                 </div>
               ))}
@@ -218,64 +243,51 @@ const HomePage = () => {
       {/* Login Modal */}
       {showLogin && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white/95 backdrop-blur-lg rounded-3xl p-10 max-w-md w-full mx-4 shadow-2xl transform animate-in slide-in-from-bottom-4">
-            <div className="flex justify-between items-center mb-8">
+          <div className="bg-white/95 backdrop-blur-lg rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform animate-in slide-in-from-bottom-4">
+            <div className="flex justify-between items-center mb-6">
               <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Login to Account
+                Login
               </h2>
               <button
-                onClick={() => {
-                  setShowLogin(false);
-                  setLoginError('');
-                  setUsername('');
-                  setPassword('');
-                }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setShowLogin(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <XMarkIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>
-
+            
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Username
                 </label>
-                <div className="relative">
-                  <UserIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300"
-                    placeholder="Enter username"
-                    required
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Enter username"
+                  required
+                />
               </div>
-
+              
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <LockClosedIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300"
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Enter password"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? (
                       <EyeSlashIcon className="h-5 w-5" />
@@ -285,16 +297,16 @@ const HomePage = () => {
                   </button>
                 </div>
               </div>
-
+              
               {loginError && (
-                <div className="text-red-600 text-sm bg-red-50 p-4 rounded-xl border border-red-200">
-                  {loginError}
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-600 text-sm">{loginError}</p>
                 </div>
               )}
-
+              
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 px-6 rounded-xl font-semibold shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300"
               >
                 Login
               </button>
@@ -303,131 +315,174 @@ const HomePage = () => {
         </div>
       )}
 
+      {/* Admin Panel Modal */}
+      <AdminPanel 
+        isOpen={showAdminPanel} 
+        onClose={() => setShowAdminPanel(false)} 
+      />
+
+      {/* School Login Modal */}
+      <SchoolLogin 
+        isOpen={showSchoolLogin} 
+        onClose={() => setShowSchoolLogin(false)}
+        onLoginSuccess={handleSchoolLoginSuccess}
+        onAdminClick={() => setShowAdminPanel(true)}
+      />
+
       {/* Main Content */}
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className={`text-center mb-16 transition-all duration-1000 ${isLoaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}>
-          <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 p-4 rounded-full shadow-2xl">
-              <SparklesIcon className="h-12 w-12 text-white" />
+      <main className="relative z-10 flex-1">
+        {/* Hero Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <div className={`transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
+                Welcome to{' '}
+                <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                  Katha Sales
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed">
+                Your comprehensive business management solution. From inventory to sales, 
+                we've got everything you need to grow your business.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center">
+                    <RocketLaunchIcon className="h-6 w-6 mr-3" />
+                    Get Started
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => setShowSchoolLogin(true)}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center">
+                    <AcademicCapIcon className="h-6 w-6 mr-3" />
+                    School System
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
-          <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
-            Welcome to{' '}
-            <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-              Katha Sales
-            </span>
-          </h1>
-          <p className="text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed">
-            Your trusted partner for all your business needs. We provide comprehensive 
-            solutions to help your business grow and succeed in the digital age.
-          </p>
-        </div>
-
-        {/* Company Information Cards */}
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}>
-          <div className="group bg-white/10 backdrop-blur-lg rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 border border-white/20">
-            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-4 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg">
-              <BuildingOfficeIcon className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Company</h3>
-            <p className="text-white/80 font-medium">KATHA SALES</p>
-          </div>
-
-          <div className="group bg-white/10 backdrop-blur-lg rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 border border-white/20">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-4 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg">
-              <MapPinIcon className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Address</h3>
-            <p className="text-white/80 font-medium">9, OM SHIV PARK SOCIETY<br />PIJ ROAD, NADIAD-387002</p>
-          </div>
-
-          <div className="group bg-white/10 backdrop-blur-lg rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 border border-white/20">
-            <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg">
-              <EnvelopeIcon className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Email</h3>
-            <p className="text-white/80 font-medium">kathasales31@gmail.com</p>
-          </div>
-
-          <div className="group bg-white/10 backdrop-blur-lg rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 border border-white/20">
-            <div className="bg-gradient-to-br from-orange-500 to-red-500 p-4 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg">
-              <PhoneIcon className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Mobile</h3>
-            <p className="text-white/80 font-medium">+91 9898986217</p>
-          </div>
-        </div>
+        </section>
 
         {/* Features Section */}
-        <div className={`bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20 transition-all duration-1000 delay-500 ${isLoaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}>
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">
-            Our Premium Services
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="group text-center">
-              <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-6 rounded-3xl w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <ChartBarIcon className="h-12 w-12 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Smart Accounting</h3>
-              <p className="text-white/80 leading-relaxed">Complete accounting solutions with AI-powered insights for your business growth</p>
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5 backdrop-blur-lg">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Why Choose{' '}
+                <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                  Katha Sales?
+                </span>
+              </h2>
+              <p className="text-xl text-white/80 max-w-3xl mx-auto">
+                Experience the power of integrated business management with our comprehensive suite of tools.
+              </p>
             </div>
-
-            <div className="group text-center">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-6 rounded-3xl w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <RocketLaunchIcon className="h-12 w-12 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Advanced Reports</h3>
-              <p className="text-white/80 leading-relaxed">Real-time analytics and detailed reports to make informed business decisions</p>
-            </div>
-
-            <div className="group text-center">
-              <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-3xl w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <ShieldCheckIcon className="h-12 w-12 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Enterprise Security</h3>
-              <p className="text-white/80 leading-relaxed">Bank-level security with encrypted data and secure cloud infrastructure</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: ChartBarIcon,
+                  title: 'Advanced Analytics',
+                  description: 'Get detailed insights into your business performance with comprehensive reports and analytics.',
+                  color: 'from-blue-500 to-cyan-500'
+                },
+                {
+                  icon: ShieldCheckIcon,
+                  title: 'Secure & Reliable',
+                  description: 'Your data is protected with enterprise-grade security and reliable backup systems.',
+                  color: 'from-green-500 to-emerald-500'
+                },
+                {
+                  icon: SparklesIcon,
+                  title: 'Easy to Use',
+                  description: 'Intuitive interface designed for users of all technical levels.',
+                  color: 'from-purple-500 to-pink-500'
+                },
+                {
+                  icon: StarIcon,
+                  title: '24/7 Support',
+                  description: 'Round-the-clock customer support to help you whenever you need assistance.',
+                  color: 'from-yellow-500 to-orange-500'
+                },
+                {
+                  icon: BuildingOfficeIcon,
+                  title: 'Multi-Branch',
+                  description: 'Manage multiple branches and locations from a single platform.',
+                  color: 'from-indigo-500 to-purple-500'
+                },
+                {
+                  icon: AcademicCapIcon,
+                  title: 'School Management',
+                  description: 'Integrated school management system for teacher salary and administration.',
+                  color: 'from-teal-500 to-blue-500'
+                }
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className={`bg-gradient-to-br ${feature.color} p-8 rounded-2xl text-white shadow-xl transform hover:scale-105 transition-all duration-300`}
+                >
+                  <feature.icon className="h-12 w-12 mb-6" />
+                  <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
+                  <p className="text-white/90 leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Call to Action */}
-        <div className={`text-center mt-16 transition-all duration-1000 delay-700 ${isLoaded ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-10'}`}>
-          <button
-            onClick={() => setShowLogin(true)}
-            className="group bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white px-12 py-6 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
-          >
-            <div className="flex items-center justify-center">
-              <StarIcon className="h-6 w-6 mr-3" />
-              Get Started Today
-              <StarIcon className="h-6 w-6 ml-3" />
+        {/* Contact Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
+              Ready to Get Started?
+            </h2>
+            <p className="text-xl text-white/80 mb-12 max-w-3xl mx-auto">
+              Join thousands of businesses that trust Katha Sales for their management needs.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <button
+                onClick={() => setShowLogin(true)}
+                className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center">
+                  <UserIcon className="h-6 w-6 mr-3" />
+                  Start Free Trial
+                </div>
+              </button>
+              
+              <div className="flex items-center space-x-6 text-white/80">
+                <div className="flex items-center">
+                  <PhoneIcon className="h-5 w-5 mr-2" />
+                  <span>+91 98765 43210</span>
+                </div>
+                <div className="flex items-center">
+                  <EnvelopeIcon className="h-5 w-5 mr-2" />
+                  <span>info@kathasales.com</span>
+                </div>
+              </div>
             </div>
-          </button>
-        </div>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-black/20 backdrop-blur-lg border-t border-white/20 py-12 mt-20">
+      <footer className="relative z-10 bg-black/20 backdrop-blur-lg border-t border-white/20 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 p-3 rounded-full">
-                <BuildingOfficeIcon className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mb-4">KATHA SALES</p>
-            <p className="text-white/70 mb-6 text-lg">
-              9, OM SHIV PARK SOCIETY, PIJ ROAD, NADIAD-387002
-            </p>
-            <div className="flex justify-center space-x-8 text-sm text-white/60">
-              <span className="flex items-center">
-                <EnvelopeIcon className="h-4 w-4 mr-2" />
-                kathasales31@gmail.com
-              </span>
-              <span className="flex items-center">
-                <PhoneIcon className="h-4 w-4 mr-2" />
-                +91 9898986217
-              </span>
-            </div>
+          <div className="text-center text-white/60">
+            <p>&copy; 2024 Katha Sales. All rights reserved.</p>
           </div>
         </div>
       </footer>

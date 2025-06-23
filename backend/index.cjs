@@ -55,11 +55,11 @@ app.get('/', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4005;
 
 // Only start the server if this file is run directly
 if (require.main === module) {
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, '127.0.0.1', () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 }
