@@ -44,10 +44,12 @@ $KATHA_PATH = "/var/www/katha-sales"
 $SCHOOL_PATH = "/var/www/school-app"
 $KEY_PATH = "C:\Users\DELL\Desktop\katha 123\config\deploy_key"
 
-Write-Host "Step 1: Pushing changes to GitHub..." -ForegroundColor Blue
+Write-Host "Step 1: Fixing Git branch and pushing changes..." -ForegroundColor Blue
+git checkout main
+git merge main-website-page
 git add .
 git commit -m "Auto-commit before deployment"
-git push
+git push origin main
 
 Write-Host "Step 2: Creating backup on server..." -ForegroundColor Blue
 $BACKUP_PATH = "/var/www/backup-$(Get-Date -Format 'yyyyMMdd_HHmmss')"
@@ -62,15 +64,19 @@ ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo systemctl stop nginx 2>/dev/nul
 Write-Host "Step 4: Cleaning server and cloning fresh code..." -ForegroundColor Blue
 $repoUrl = "https://github.com/gauav9982/katha-123.git"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd /var/www && sudo rm -rf katha-sales school-app && git clone $repoUrl katha-sales"
-ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd /var/www && sudo cp -r katha-sales/school school-app"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd /var/www && sudo mkdir -p school-app && sudo cp -r katha-sales/school/* school-app/"
 
-Write-Host "Step 5: Installing dependencies..." -ForegroundColor Blue
-ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH && npm run install:all"
-ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH && npm run install:all"
+Write-Host "Step 5: Installing dependencies with cache clear..." -ForegroundColor Blue
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH && npm cache clean --force && npm install"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH/backend && npm install"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH/frontend && npm install"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH && npm cache clean --force && npm install"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH/backend && npm install"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH/frontend && npm install"
 
 Write-Host "Step 6: Setting up databases..." -ForegroundColor Blue
-ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH && npm run setup"
-ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH && npm run setup"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH/backend && node setup-database.cjs"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH/backend && node setup-database.cjs"
 
 Write-Host "Step 7: Building frontends..." -ForegroundColor Blue
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH/frontend && npm run build"
@@ -89,7 +95,7 @@ ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo systemctl start nginx"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "pm2 save"
 
 Write-Host "Step 10: Verifying deployment..." -ForegroundColor Blue
-Start-Sleep -Seconds 5
+Start-Sleep -Seconds 10
 
 $backendCheck = ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "curl -s http://localhost:4000/api/health"
 if ($backendCheck -match "ok") {
