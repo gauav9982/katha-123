@@ -1,7 +1,7 @@
 Write-Host "Starting All Apps (auto port kill)..." -ForegroundColor Green
 
 # Kill required ports
-$ports = @(4005, 4009, 5173, 5179)
+$ports = @(4000, 4001, 5174, 5180)
 foreach ($port in $ports) {
     $pids = netstat -ano | findstr ":$port" | ForEach-Object {
         ($_ -split '\s+')[-1]
@@ -16,7 +16,7 @@ foreach ($port in $ports) {
 
 # Start Main Backend
 Write-Host "Starting Main Backend..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'backend'; npm start" -WindowStyle Normal
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'backend'; node index.cjs" -WindowStyle Normal
 
 # Start Main Frontend
 Write-Host "Starting Main Frontend..." -ForegroundColor Yellow
@@ -24,14 +24,14 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'frontend'; np
 
 # Start School Backend
 Write-Host "Starting School Backend..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'school/backend'; npm start" -WindowStyle Normal
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'school/backend'; node index.cjs" -WindowStyle Normal
 
 # Start School Frontend
 Write-Host "Starting School Frontend..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'school/frontend'; npm run dev" -WindowStyle Normal
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'school/frontend'; npm run build; npm run preview -- --port 5180 --host" -WindowStyle Normal
 
 Write-Host "\nAll servers are starting in new windows!" -ForegroundColor Green
-Write-Host "Main backend:   http://localhost:4005" -ForegroundColor Cyan
-Write-Host "Main frontend:  http://localhost:5173" -ForegroundColor Cyan
-Write-Host "School backend: http://localhost:4009" -ForegroundColor Cyan
-Write-Host "School frontend:http://localhost:5179" -ForegroundColor Cyan 
+Write-Host "Main backend:    http://localhost:4000" -ForegroundColor Cyan
+Write-Host "Main frontend:   http://localhost:5174" -ForegroundColor Cyan
+Write-Host "School backend:  http://localhost:4001" -ForegroundColor Cyan
+Write-Host "School frontend: http://localhost:5180/school-app/" -ForegroundColor Cyan 

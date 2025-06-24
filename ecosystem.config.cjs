@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'katha-sales-backend',
-      script: './backend/index.cjs',
+      script: 'backend/index.cjs',
       watch: false,
       exec_mode: 'fork',
       instances: 1,
@@ -18,7 +18,7 @@ module.exports = {
     },
     {
       name: 'school-backend',
-      script: './school/backend/index.cjs',
+      script: 'school/backend/index.cjs',
       watch: false,
       exec_mode: 'fork',
       instances: 1,
@@ -34,14 +34,14 @@ module.exports = {
     },
     {
       name: 'school-frontend',
-      script: 'cd school/frontend && npm run preview -- --port 5179 --host',
+      script: 'school/frontend/node_modules/vite/bin/vite.js',
+      args: 'preview --port 5180 --host',
       watch: false,
       exec_mode: 'fork',
       instances: 1,
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'production',
-        PORT: 5179,
       },
       error_file: './school/logs/frontend-err.log',
       out_file: './school/logs/frontend-out.log',

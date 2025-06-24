@@ -55,7 +55,7 @@ const SchoolDashboard = () => {
     localStorage.removeItem('schoolCityName');
     window.location.href = window.location.hostname === 'localhost' 
       ? 'http://localhost:5173'
-      : '/';
+      : 'http://kathasales.com';
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
