@@ -60,8 +60,8 @@ const HomePage = () => {
     
     // Redirect to school dashboard
     const schoolUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:5179' 
-      : '/school-app';
+      ? 'http://localhost:5179/dashboard' 
+      : '/school-app/dashboard';
     window.location.href = schoolUrl;
   };
 

@@ -51,6 +51,8 @@ const SchoolDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('schoolLoginSession');
+    localStorage.removeItem('schoolCityId');
+    localStorage.removeItem('schoolCityName');
     window.location.href = window.location.hostname === 'localhost' 
       ? 'http://localhost:5173'
       : '/';
