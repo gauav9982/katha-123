@@ -30,60 +30,48 @@ import './App.css'
 function App() {
   return (
     <div className="App">
-      {/* The login page is removed. It will now directly go to the main application page. */}
       <Routes>
-        {/* Default route is now School Dashboard */}
+        {/* Default route redirects to dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-        <Route path="/dashboard" element={<SessionCheck><SchoolDashboard /></SessionCheck>} />
         
-        {/* The /school route now also redirects to the dashboard */}
-        <Route path="/school" element={<Navigate to="/dashboard" replace />} />
+        {/* Dashboard route */}
+        <Route path="/dashboard" element={<SchoolDashboard />} />
         
+        {/* Teacher Management */}
         <Route path="/teachers" element={<TeacherManagement />} />
         <Route path="/teachers/add" element={<AddTeacherForm />} />
         <Route path="/teachers/edit/:teacherId" element={<EditTeacherForm />} />
+        
+        {/* Salary Management */}
         <Route path="/salary" element={<SalaryManagement />} />
+        
+        {/* Allowance Management */}
         <Route path="/da-management" element={<DAManagement />} />
         <Route path="/hra-management" element={<HRAManagement />} />
         <Route path="/lwp-management" element={<LWPManagement />} />
-        <Route path="/reports/payable-5th-commission" element={<SessionCheck><Payable5thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/paid-5th-commission" element={<SessionCheck><Paid5thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/payable-6th-commission" element={<SessionCheck><Payable6thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/paid-6th-commission" element={<SessionCheck><Paid6thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/sup-payable-6th-commission" element={<SessionCheck><SupPayable6thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/sup-paid-6th-commission" element={<SessionCheck><SupPaid6thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/payable-7th-commission" element={<SessionCheck><Payable7thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/paid-7th-commission" element={<SessionCheck><Paid7thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/sup-payable-5th-commission" element={<SessionCheck><SupPayable5thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/sup-paid-5th-commission" element={<SessionCheck><SupPaid5thCommissionReport /></SessionCheck>} />
-        <Route path="/reports/payable-hra" element={<SessionCheck><PayableHRAReport /></SessionCheck>} />
-        <Route path="/reports/paid-hra" element={<SessionCheck><PaidHRAReport /></SessionCheck>} />
-        <Route path="/reports/all-payable" element={<SessionCheck><AllPayableReport /></SessionCheck>} />
-        <Route path="/reports/all-paid" element={<SessionCheck><AllPaidReport /></SessionCheck>} />
-        <Route path="/reports/different-salary-report" element={<SessionCheck><DifferentSalaryReport /></SessionCheck>} />
+        
+        {/* Reports */}
+        <Route path="/reports/payable-5th-commission" element={<Payable5thCommissionReport />} />
+        <Route path="/reports/paid-5th-commission" element={<Paid5thCommissionReport />} />
+        <Route path="/reports/payable-6th-commission" element={<Payable6thCommissionReport />} />
+        <Route path="/reports/paid-6th-commission" element={<Paid6thCommissionReport />} />
+        <Route path="/reports/sup-payable-6th-commission" element={<SupPayable6thCommissionReport />} />
+        <Route path="/reports/sup-paid-6th-commission" element={<SupPaid6thCommissionReport />} />
+        <Route path="/reports/payable-7th-commission" element={<Payable7thCommissionReport />} />
+        <Route path="/reports/paid-7th-commission" element={<Paid7thCommissionReport />} />
+        <Route path="/reports/sup-payable-5th-commission" element={<SupPayable5thCommissionReport />} />
+        <Route path="/reports/sup-paid-5th-commission" element={<SupPaid5thCommissionReport />} />
+        <Route path="/reports/payable-hra" element={<PayableHRAReport />} />
+        <Route path="/reports/paid-hra" element={<PaidHRAReport />} />
+        <Route path="/reports/all-payable" element={<AllPayableReport />} />
+        <Route path="/reports/all-paid" element={<AllPaidReport />} />
+        <Route path="/reports/different-salary-report" element={<DifferentSalaryReport />} />
+        
+        {/* Debug Routes */}
         <Route path="/login-debug" element={<LoginDebug />} />
-        <Route path="/debug" element={
-          <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-800 mb-4">School App Debug Page</h1>
-              <p className="text-gray-600 mb-4">School application is running successfully!</p>
-              <button 
-                onClick={() => window.location.href = '/school'}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Go to School Dashboard
-              </button>
-            </div>
-          </div>
-        } />
-        <Route path="/reports" element={<div className="min-h-screen bg-gray-100 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Reports</h1>
-            <p className="text-gray-600">Reports feature coming soon...</p>
-          </div>
-        </div>} />
-        <Route path="*" element={<Navigate to="/teachers" replace />} />
+        
+        {/* Catch all route - redirect to dashboard */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </div>
   )

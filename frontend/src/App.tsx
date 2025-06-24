@@ -90,7 +90,16 @@ const LoadingFallback = () => (
 // School Application Redirect Component
 const SchoolRedirect = () => {
   React.useEffect(() => {
-    // Redirect to school application on server
+    // Set default session data
+    const sessionData = {
+      cityName: 'NADIAD',
+      loginTime: new Date().toISOString()
+    };
+    localStorage.setItem('schoolLoginSession', JSON.stringify(sessionData));
+    localStorage.setItem('schoolCityId', '1');
+    localStorage.setItem('schoolCityName', 'NADIAD');
+    
+    // Redirect to school application
     const schoolUrl = window.location.hostname === 'localhost' 
       ? 'http://localhost:5179' 
       : '/school-app';
@@ -102,7 +111,7 @@ const SchoolRedirect = () => {
       <div className="text-center text-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
         <h2 className="text-2xl font-bold mb-2">Redirecting to School System...</h2>
-        <p className="text-white/80">Please wait while we redirect you to the School Salary Management System.</p>
+        <p className="text-white/80">Please wait while we redirect you to the School Dashboard.</p>
       </div>
     </div>
   );

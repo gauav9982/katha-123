@@ -25,7 +25,6 @@ import SchoolLogin from './SchoolLogin';
 const HomePage = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [showSchoolLogin, setShowSchoolLogin] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -49,31 +48,21 @@ const HomePage = () => {
     }
   };
 
-  const handleSchoolLoginSuccess = (cityId: string, cityName: string) => {
-    console.log(`Login successful for ${cityName} (ID: ${cityId}). Storing session and redirecting.`);
-    
-    // Store session data for school app
+  const handleSchoolRedirect = () => {
+    // Set default session data
     const sessionData = {
-      cityName: cityName,
+      cityName: 'NADIAD',
       loginTime: new Date().toISOString()
     };
-    
-    // Store in localStorage for school app
     localStorage.setItem('schoolLoginSession', JSON.stringify(sessionData));
+    localStorage.setItem('schoolCityId', '1');
+    localStorage.setItem('schoolCityName', 'NADIAD');
     
-    // Also store the old format for compatibility
-    localStorage.setItem('schoolCityId', cityId);
-    localStorage.setItem('schoolCityName', cityName);
-    
-    setShowSchoolLogin(false); // Close the modal
-    
-    // Show success message and redirect
-    setTimeout(() => {
-      const schoolUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5179/dashboard' 
-        : '/school-app/dashboard';
-      window.location.href = schoolUrl;
-    }, 500);
+    // Redirect to school dashboard
+    const schoolUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5179' 
+      : '/school-app';
+    window.location.href = schoolUrl;
   };
 
   const bankDetails = [
@@ -186,7 +175,7 @@ const HomePage = () => {
             <div className="flex items-center space-x-4">
               {/* Only School System Button */}
               <button
-                onClick={() => setShowSchoolLogin(true)}
+                onClick={handleSchoolRedirect}
                 className="group relative px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -324,14 +313,6 @@ const HomePage = () => {
         onClose={() => setShowAdminPanel(false)} 
       />
 
-      {/* School Login Modal */}
-      <SchoolLogin 
-        isOpen={showSchoolLogin} 
-        onClose={() => setShowSchoolLogin(false)}
-        onLoginSuccess={handleSchoolLoginSuccess}
-        onAdminClick={() => setShowAdminPanel(true)}
-      />
-
       {/* Main Content */}
       <main className="relative z-10 flex-1">
         {/* Hero Section */}
@@ -363,7 +344,7 @@ const HomePage = () => {
                 </button>
                 
                 <button
-                  onClick={() => setShowSchoolLogin(true)}
+                  onClick={handleSchoolRedirect}
                   className="group relative px-8 py-4 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
