@@ -35,7 +35,7 @@ function App() {
         {/* Default route is now School Dashboard */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        <Route path="/dashboard" element={<SchoolDashboard />} />
+        <Route path="/dashboard" element={<SessionCheck><SchoolDashboard /></SessionCheck>} />
         
         {/* The /school route now also redirects to the dashboard */}
         <Route path="/school" element={<Navigate to="/dashboard" replace />} />
