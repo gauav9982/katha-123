@@ -90,8 +90,11 @@ const LoadingFallback = () => (
 // School Application Redirect Component
 const SchoolRedirect = () => {
   React.useEffect(() => {
-    // Redirect to school application
-    window.location.href = 'http://localhost:5179';
+    // Redirect to school application on server
+    const schoolUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5179' 
+      : 'https://kathasales.com/school-app';
+    window.location.href = schoolUrl;
   }, []);
   
   return (

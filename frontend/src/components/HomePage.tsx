@@ -69,7 +69,10 @@ const HomePage = () => {
     
     // Show success message and redirect
     setTimeout(() => {
-      window.location.href = 'http://localhost:5179/dashboard';
+      const schoolUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5179/dashboard' 
+        : 'https://kathasales.com/school-app/dashboard';
+      window.location.href = schoolUrl;
     }, 500);
   };
 
