@@ -75,7 +75,9 @@ ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH/backend && npm insta
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH/frontend && npm install"
 
 Write-Host "Step 6: Setting up databases..." -ForegroundColor Blue
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH && mkdir -p database"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH/backend && node setup-database.cjs"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH/backend && node setup-cities.js"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $SCHOOL_PATH/backend && node setup-database.cjs"
 
 Write-Host "Step 7: Building frontends..." -ForegroundColor Blue
@@ -87,6 +89,8 @@ ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chown -R www-data:www-data $KAT
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chown -R www-data:www-data $SCHOOL_PATH"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chmod -R 755 $KATHA_PATH"
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chmod -R 755 $SCHOOL_PATH"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chmod -R 664 $KATHA_PATH/database"
+ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "sudo chmod -R 664 $SCHOOL_PATH/database"
 
 Write-Host "Step 9: Starting services..." -ForegroundColor Blue
 ssh -i $KEY_PATH "$SERVER_USER@$SERVER_IP" "cd $KATHA_PATH && pm2 start ecosystem.config.cjs"
