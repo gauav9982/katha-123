@@ -20,7 +20,50 @@ If the school system is not loading at `kathasales.com/school-app`, check:
    - View logs: `pm2 logs school-frontend`
    - Restart if needed: `pm2 restart school-frontend`
 
-### 2. API Connection Issues
+### 2. School System 404 Error on Dashboard
+
+If you see a "404 Not Found" error when accessing `/school-app/dashboard`:
+
+1. **Root Cause**:
+   - React Router routes are not being properly handled by nginx
+   - nginx is trying to find a physical file at `/school-app/dashboard` instead of serving the SPA
+   - This happens because the nginx `try_files` directive is not properly configured
+
+2. **Solution**:
+   ```nginx
+   # School Application Route
+   location /school-app/ {
+       alias /var/www/katha-sales/school/frontend/dist/;
+       try_files $uri $uri/ /school-app/index.html;
+       
+       # Important: All routes should fallback to index.html
+       error_page 404 = /school-app/index.html;
+   }
+   ```
+
+3. **Frontend Configuration**:
+   - Ensure `vite.config.ts` has correct base path:
+   ```ts
+   export default defineConfig({
+     base: '/school-app/',
+     // ... other config
+   })
+   ```
+   
+   - Ensure React Router is using the correct basename:
+   ```tsx
+   <Router basename="/school-app">
+     {/* routes */}
+   </Router>
+   ```
+
+4. **Verification Steps**:
+   - Check nginx configuration: `nginx -T | grep -A 10 'location /school-app/'`
+   - Check nginx error logs: `tail -f /var/log/nginx/error.log`
+   - Verify the build files exist: `ls -la /var/www/katha-sales/school/frontend/dist`
+   - Test the API endpoints: `curl http://localhost:4001/api/health`
+
+### 3. API Connection Issues
 
 If the school system API is not responding:
 
@@ -34,7 +77,7 @@ If the school system API is not responding:
    - Check permissions: `ls -la /var/www/katha-sales/database`
    - Run setup if needed: `cd /var/www/katha-sales/school/backend && node setup-database.cjs`
 
-### 3. Port Conflicts
+### 4. Port Conflicts
 
 If you see port conflicts:
 
@@ -57,7 +100,7 @@ If you see port conflicts:
    pm2 restart all
    ```
 
-### 4. Permission Issues
+### 5. Permission Issues
 
 Common permission problems and fixes:
 
@@ -73,7 +116,7 @@ Common permission problems and fixes:
    sudo chown -R www-data:www-data /var/www/katha-sales/school/logs
    ```
 
-### 5. Quick Fixes
+### 6. Quick Fixes
 
 Common commands for quick fixes:
 
