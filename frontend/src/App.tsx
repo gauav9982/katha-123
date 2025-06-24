@@ -93,7 +93,7 @@ const SchoolRedirect = () => {
     // Redirect to school application on server
     const schoolUrl = window.location.hostname === 'localhost' 
       ? 'http://localhost:5179' 
-      : 'https://kathasales.com/school-app';
+      : '/school-app';
     window.location.href = schoolUrl;
   }, []);
   

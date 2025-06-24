@@ -46,7 +46,7 @@ const SchoolDashboard = () => {
 
   const fetchCities = async () => {
     try {
-      const response = await fetch('http://localhost:4009/api/cities');
+      const response = await fetch('/api/cities');
       const data = await response.json();
       if (data.success) {
         setCities(data.data);
@@ -64,7 +64,9 @@ const SchoolDashboard = () => {
     setIsLoggedIn(false);
     setLoginError('');
     // Redirect to main website
-    window.location.href = 'http://localhost:5173';
+    window.location.href = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5173'
+      : '/';
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -82,7 +84,7 @@ const SchoolDashboard = () => {
     try {
       console.log('Attempting login for city:', cityName);
       
-      const response = await fetch('http://localhost:4009/api/cities/login', {
+      const response = await fetch('/api/cities/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cityName: cityName.trim() })
