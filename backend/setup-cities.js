@@ -1,42 +1,71 @@
-const db = require('./config/database.cjs');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-// Create cities table
-db.exec(`
-  CREATE TABLE IF NOT EXISTS cities (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
-    username TEXT,
-    password TEXT
-  )
-`, (err) => {
-  if (err) {
-    console.error('Error creating cities table:', err);
-    return;
-  }
-  console.log('Cities table created successfully');
-  
-  // Add some sample cities
-  const sampleCities = [
-    { name: 'Ahmedabad', username: 'ahmedabad', password: 'ahmedabad123' },
-    { name: 'Surat', username: 'surat', password: 'surat123' },
-    { name: 'Vadodara', username: 'vadodara', password: 'vadodara123' },
-    { name: 'Nadiad', username: 'nadiad', password: 'nadiad123' }
-  ];
-  
-  const insertStmt = db.prepare('INSERT OR IGNORE INTO cities (name, username, password) VALUES (?, ?, ?)');
-  
-  sampleCities.forEach(city => {
-    insertStmt.run(city.name, city.username, city.password, (err) => {
-      if (err) {
-        console.error(`Error inserting ${city.name}:`, err);
-      } else {
-        console.log(`Added city: ${city.name}`);
-      }
+const dbPath = path.join(__dirname, '..', 'database', 'katha.db');
+const db = new sqlite3.Database(dbPath);
+
+const cities = [
+    'Ahmedabad',
+    'Surat',
+    'Vadodara',
+    'Nadiad'
+];
+
+function setupCities() {
+    return new Promise((resolve, reject) => {
+        // Create table if not exists
+        db.run(`CREATE TABLE IF NOT EXISTS cities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE
+        )`, (err) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            console.log('Cities table created successfully');
+
+            // Insert cities one by one
+            const insertCity = (index) => {
+                if (index >= cities.length) {
+                    resolve();
+                    return;
+                }
+
+                const city = cities[index];
+                db.run('INSERT OR IGNORE INTO cities (name) VALUES (?)', [city], (err) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    console.log(`Added city: ${city}`);
+                    insertCity(index + 1);
+                });
+            };
+
+            insertCity(0);
+        });
     });
-  });
-  
-  insertStmt.finalize(() => {
-    console.log('Setup completed');
-    db.close();
-  });
-}); 
+}
+
+// Main execution
+async function main() {
+    try {
+        console.log('Connected to SQLite database');
+        await setupCities();
+        console.log('Setup completed');
+    } catch (error) {
+        console.error('Error:', error);
+        process.exit(1);
+    } finally {
+        // Close database connection
+        db.close((err) => {
+            if (err) {
+                console.error('Error closing database:', err);
+                process.exit(1);
+            }
+            console.log('Database connection closed');
+        });
+    }
+}
+
+main(); 
