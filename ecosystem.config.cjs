@@ -34,7 +34,7 @@ module.exports = {
     },
     {
       name: 'school-frontend',
-      script: 'cd school/frontend && npm run preview',
+      script: 'cd school/frontend && npm run preview -- --port 5179 --host',
       watch: false,
       exec_mode: 'fork',
       instances: 1,
