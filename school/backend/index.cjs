@@ -228,7 +228,8 @@ app.post('/api/reports/payable-6th-commission/calculate', (req, res) => {
       return res.status(400).json({ success: false, error: '7th commission data not found for this teacher.' });
     }
     
-    const sixthCommissionDate = new Date(sixthCommission.pay_date);
+    // FIXED: Start from April 1, 2009 (not from 6th commission pay date)
+    const startDate = new Date('2009-04-01');
     const seventhCommissionDate = new Date(seventhCommission.pay_date);
     
     // End date is one day before 7th commission date
@@ -242,7 +243,7 @@ app.post('/api/reports/payable-6th-commission/calculate', (req, res) => {
     delete require.cache[require.resolve('./calculation-logic.cjs')];
     const { calculatePayable6thCommissionReport } = require('./calculation-logic.cjs');
 
-    const reportData = calculatePayable6thCommissionReport(teacher, grades, sixthCommission, seventhCommission, sixthCommissionDate, finalEndDate);
+    const reportData = calculatePayable6thCommissionReport(teacher, grades, sixthCommission, seventhCommission, startDate, finalEndDate);
     
     // Save to database
     const deleteStmt = db.prepare(`DELETE FROM salary_reports WHERE teacher_id = ? AND report_type = 'payable' AND commission_type = '6th'`);
@@ -318,7 +319,8 @@ app.post('/api/reports/paid-6th-commission/calculate', (req, res) => {
       return res.status(400).json({ success: false, error: '6th or 7th commission data not found for this teacher.' });
     }
     
-    const sixthCommissionDate = new Date(sixthCommission.pay_date);
+    // FIXED: Start from April 1, 2009 (not from 6th commission pay date)
+    const startDate = new Date('2009-04-01');
     const seventhCommissionDate = new Date(seventhCommission.pay_date);
     
     const endDate = new Date(seventhCommissionDate);
@@ -330,7 +332,7 @@ app.post('/api/reports/paid-6th-commission/calculate', (req, res) => {
     delete require.cache[require.resolve('./calculation-logic.cjs')];
     const { calculatePaid6thCommissionReport } = require('./calculation-logic.cjs');
 
-    const reportData = calculatePaid6thCommissionReport(teacher, grades, sixthCommission, seventhCommission, sixthCommissionDate, finalEndDate);
+    const reportData = calculatePaid6thCommissionReport(teacher, grades, sixthCommission, seventhCommission, startDate, finalEndDate);
     
     const deleteStmt = db.prepare(`DELETE FROM salary_reports WHERE teacher_id = ? AND report_type = 'paid' AND commission_type = '6th'`);
     deleteStmt.run(teacherId);
@@ -404,7 +406,8 @@ app.post('/api/reports/sup-payable-6th-commission/calculate', (req, res) => {
       return res.status(400).json({ success: false, error: '6th commission data not found for this teacher.' });
     }
     
-    const startDate = new Date(sixthCommission.pay_date);
+    // FIXED: Start from April 1, 2009 (not from 6th commission pay date)
+    const startDate = new Date('2009-04-01');
     const fixedEndDate = new Date('2022-10-11');
     
     const retirementDate = teacher.retirement_date ? new Date(teacher.retirement_date) : null;
@@ -484,7 +487,8 @@ app.post('/api/reports/sup-paid-6th-commission/calculate', (req, res) => {
       return res.status(400).json({ success: false, error: '6th commission data not found for this teacher.' });
     }
     
-    const startDate = new Date(sixthCommission.pay_date);
+    // FIXED: Start from April 1, 2009 (not from 6th commission pay date)
+    const startDate = new Date('2009-04-01');
     const fixedEndDate = new Date('2022-10-11');
     
     const retirementDate = teacher.retirement_date ? new Date(teacher.retirement_date) : null;
