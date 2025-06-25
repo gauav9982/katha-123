@@ -44,10 +44,14 @@ const SessionCheck: React.FC<SessionCheckProps> = ({ children }) => {
           console.log('SessionCheck: Session expired, removing from localStorage');
           // Session expired
           localStorage.removeItem('schoolLoginSession');
+          localStorage.removeItem('schoolCityId');
+          localStorage.removeItem('schoolCityName');
         }
       } catch (error) {
         console.error('SessionCheck: Error parsing session:', error);
         localStorage.removeItem('schoolLoginSession');
+        localStorage.removeItem('schoolCityId');
+        localStorage.removeItem('schoolCityName');
       }
     }
 
@@ -56,8 +60,12 @@ const SessionCheck: React.FC<SessionCheckProps> = ({ children }) => {
     setIsAuthenticated(false);
     setIsLoading(false);
     
-    // Redirect to main application (using port 5173)
-    window.location.replace('http://localhost:5173');
+    // Redirect to main application based on environment
+    const baseUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5173'
+      : window.location.protocol + '//' + window.location.hostname;
+    
+    window.location.href = baseUrl;
   }, [searchParams, navigate]);
 
   if (isLoading) {

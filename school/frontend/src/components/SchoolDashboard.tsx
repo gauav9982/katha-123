@@ -24,6 +24,13 @@ const SchoolDashboard = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState('');
 
+  // Get base URL for API calls
+  const getApiBaseUrl = () => {
+    return window.location.hostname === 'localhost' 
+      ? '/api'
+      : '/school-app/api';
+  };
+
   useEffect(() => {
     // Set default session
     const sessionData = {
@@ -37,7 +44,7 @@ const SchoolDashboard = () => {
 
   const fetchCities = async () => {
     try {
-      const response = await fetch('/api/cities');
+      const response = await fetch(`${getApiBaseUrl()}/cities`);
       const data = await response.json();
       if (data.success) {
         setCities(data.data);
@@ -77,7 +84,7 @@ const SchoolDashboard = () => {
     try {
       console.log('Attempting login for city:', cityName);
       
-      const response = await fetch('/api/cities/login', {
+      const response = await fetch(`${getApiBaseUrl()}/cities/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cityName: cityName.trim() })
