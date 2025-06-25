@@ -3,20 +3,27 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/school-app/',
   plugins: [react()],
+  base: './',
   server: {
-    port: 5179, // School frontend runs on this port
-    proxy: {
-      '/api': {
-        target: 'http://localhost:4009', // School backend
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
-      }
-    }
+    port: 5180,
+    strictPort: true,
+  },
+  preview: {
+    port: 5180,
+    strictPort: true,
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
+    }
   }
 }) 

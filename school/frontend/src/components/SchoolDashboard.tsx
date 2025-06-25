@@ -53,9 +53,13 @@ const SchoolDashboard = () => {
     localStorage.removeItem('schoolLoginSession');
     localStorage.removeItem('schoolCityId');
     localStorage.removeItem('schoolCityName');
-    window.location.href = window.location.hostname === 'localhost' 
+    
+    // Redirect based on environment
+    const baseUrl = window.location.hostname === 'localhost' 
       ? 'http://localhost:5173'
-      : 'http://kathasales.com';
+      : window.location.protocol + '//' + window.location.hostname;
+    
+    window.location.href = baseUrl;
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,14 +116,14 @@ const SchoolDashboard = () => {
       description: 'Add new teacher to the system',
       icon: UserPlusIcon,
       color: 'bg-blue-500 hover:bg-blue-600',
-      route: '/teachers/add'
+      route: '/add-teacher'
     },
     {
       title: 'Teacher List',
       description: 'View and manage all teachers',
       icon: UsersIcon,
       color: 'bg-green-500 hover:bg-green-600',
-      route: '/teachers'
+      route: '/teacher-management'
     },
     // Salary & Allowances
     {
@@ -127,7 +131,7 @@ const SchoolDashboard = () => {
       description: 'Manage teacher salaries',
       icon: CurrencyDollarIcon,
       color: 'bg-yellow-500 hover:bg-yellow-600',
-      route: '/salary'
+      route: '/salary-management'
     },
     {
       title: 'DA% Management',
@@ -156,21 +160,21 @@ const SchoolDashboard = () => {
       description: 'Generate Complete All Payable Report',
       icon: DocumentTextIcon,
       color: 'bg-red-600 hover:bg-red-700',
-      route: '/reports/all-payable'
+      route: '/all-payable'
     },
     {
       title: 'All Paid Report',
       description: 'Generate Complete All Paid Report',
       icon: DocumentTextIcon,
       color: 'bg-green-600 hover:bg-green-700',
-      route: '/reports/all-paid'
+      route: '/all-paid'
     },
     {
       title: 'Different Salary Report',
       description: 'Generate Different Salary Report',
       icon: DocumentTextIcon,
       color: 'bg-cyan-600 hover:bg-cyan-700',
-      route: '/reports/different-salary-report'
+      route: '/different-salary'
     }
   ];
 
@@ -201,26 +205,26 @@ const SchoolDashboard = () => {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {dashboardButtons.map((button, index) => (
-              <div
-                key={index}
-                className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:shadow-lg transition-all duration-300 flex items-center space-x-3"
-              >
-                <div className={`flex-shrink-0 h-10 w-10 ${button.color} rounded-full flex items-center justify-center`}>
-                  <button.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <Link
-                    to={button.route}
-                    className="focus:outline-none"
-                  >
-                    <span className="absolute inset-0" aria-hidden="true" />
-                    <p className="text-sm font-medium text-gray-900">{button.title}</p>
-                    <p className="text-sm text-gray-500">{button.description}</p>
-                  </Link>
-                </div>
-              </div>
-            ))}
+            {dashboardButtons.map((button, index) => {
+              const Icon = button.icon;
+              return (
+                <Link
+                  key={index}
+                  to={button.route}
+                  className={`${button.color} rounded-lg shadow-lg p-6 text-white transform transition duration-500 hover:scale-105`}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <Icon className="h-8 w-8" />
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-lg font-medium">{button.title}</h3>
+                      <p className="mt-1 text-sm opacity-90">{button.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
