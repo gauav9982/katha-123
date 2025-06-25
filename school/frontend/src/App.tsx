@@ -1,5 +1,5 @@
 import React from 'react'
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import TeacherManagement from './components/TeacherManagement'
 import SalaryManagement from './components/SalaryManagement'
 import AddTeacherForm from './components/AddTeacherForm'
@@ -29,7 +29,7 @@ import './App.css'
 
 function App() {
   return (
-    <Router>
+    <Router basename="/school-app">
       <SessionCheck>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
