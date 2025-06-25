@@ -4,6 +4,7 @@ import { XMarkIcon, EyeIcon, EyeSlashIcon, ArrowRightOnRectangleIcon } from '@he
 interface City {
   id: string;
   name: string;
+  code: string;
 }
 
 const SchoolLogin = ({ isOpen, onClose, onLoginSuccess, onAdminClick }: { 
@@ -19,20 +20,19 @@ const SchoolLogin = ({ isOpen, onClose, onLoginSuccess, onAdminClick }: {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const fetchCities = async () => {
     try {
-        const response = await fetch('/api/cities');
-        const data = await response.json();
-        if (data.success) {
-            setCities(data.data);
-        } else {
-            setError('Failed to load cities');
-        }
+      const response = await fetch('/api/cities');
+      const data = await response.json();
+      if (data.success) {
+        setCities(data.data);
+      } else {
+        setError('Failed to load cities');
+      }
     } catch (e) {
-        setError('Failed to connect to server');
+      setError('Failed to connect to server');
     }
   };
 
@@ -47,8 +47,6 @@ const SchoolLogin = ({ isOpen, onClose, onLoginSuccess, onAdminClick }: {
     setError('');
     setIsLoading(true);
 
-    console.log('Login attempt:', { cityName: selectedCity, username, password });
-
     try {
       const response = await fetch('/api/cities/login', {
         method: 'POST',
@@ -61,22 +59,18 @@ const SchoolLogin = ({ isOpen, onClose, onLoginSuccess, onAdminClick }: {
       });
 
       const data = await response.json();
-      console.log('Login response:', data);
       
       if (response.ok && data.success) {
-        console.log('Login successful, calling onLoginSuccess with:', data.data.id, data.data.name);
         setSuccess(true);
         setTimeout(() => {
           setSuccess(false);
           onLoginSuccess(data.data.id, data.data.name);
         }, 1200);
       } else {
-        console.log('Login failed:', data.error);
-        setError(data.error || 'Login failed');
+        setError(data.error || 'Invalid credentials');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('Could not connect to the server.');
+      setError('Could not connect to the server');
     } finally {
       setIsLoading(false);
     }
@@ -90,19 +84,6 @@ const SchoolLogin = ({ isOpen, onClose, onLoginSuccess, onAdminClick }: {
   };
 
   if (!isOpen) return null;
-
-  // Show redirecting overlay
-  if (redirecting) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Redirecting to School System...</h2>
-          <p className="text-gray-600">Please wait while we redirect you to the School Dashboard.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -215,14 +196,13 @@ const SchoolLogin = ({ isOpen, onClose, onLoginSuccess, onAdminClick }: {
 
             {success && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-green-600 text-sm">Login successful! Redirecting...</p>
+                <p className="text-green-600 text-sm">Login successful! Redirecting to dashboard...</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={isLoading}
-              onClick={() => { console.log('Login button clicked'); }}
               className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Logging in...' : 'Login to School System'}

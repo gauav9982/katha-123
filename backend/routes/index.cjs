@@ -1183,84 +1183,76 @@ router.get('/last-purchase-by-code', (req, res) => {
   });
 });
 
-// Get all cities (for login dropdown)
+// Get all cities
 router.get('/cities', (req, res) => {
-  const query = 'SELECT id, name FROM cities ORDER BY name';
-  
-  db.all(query, [], (err, rows) => {
-    if (err) {
-      console.error('Error fetching cities:', err);
-      res.status(500).json({ success: false, error: 'Database error' });
-      return;
-    }
-    res.json({ success: true, data: rows });
-  });
+  try {
+    const db = getDb();
+    const cities = db.prepare('SELECT id, name, code FROM cities').all();
+    res.json({ success: true, data: cities });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to fetch cities' });
+  }
 });
 
-// Add a new city
+// Add new city
 router.post('/cities', (req, res) => {
-  const { name, username, password } = req.body;
-  if (!name || !username || !password) {
-    return res.status(400).json({ error: 'City name, username, and password are required' });
-  }
+  try {
+    const { name, code } = req.body;
 
-  const query = 'INSERT INTO cities (name, username, password) VALUES (?, ?, ?)';
-  
-  db.run(query, [name, username, password], function (err) {
-    if (err) {
-      console.error('Error adding city:', err);
-      if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        return res.status(409).json({ error: 'City or username already exists' });
-      }
-      res.status(500).json({ error: 'Database error' });
-      return;
+    if (!name || !code) {
+      return res.status(400).json({ success: false, error: 'City name and code are required' });
     }
-    res.status(201).json({ id: this.lastID, name });
-  });
-});
 
-// Delete a city
-router.delete('/cities/:id', (req, res) => {
-  const { id } = req.params;
-  const query = 'DELETE FROM cities WHERE id = ?';
-  
-  db.run(query, [id], function (err) {
-    if (err) {
-      console.error('Error deleting city:', err);
-      res.status(500).json({ success: false, error: 'Database error' });
-      return;
+    const db = getDb();
+
+    // Check if city already exists
+    const existingCity = db.prepare('SELECT id FROM cities WHERE name = ? OR code = ?').get(name, code);
+    if (existingCity) {
+      return res.status(400).json({ success: false, error: 'City with this name or code already exists' });
     }
+
+    // Insert new city
+    const result = db.prepare('INSERT INTO cities (name, code) VALUES (?, ?)').run(name, code);
     
-    if (this.changes > 0) {
-      res.json({ success: true, message: 'City deleted' });
+    if (result.changes > 0) {
+      const newCity = db.prepare('SELECT id, name, code FROM cities WHERE id = ?').get(result.lastInsertRowid);
+      res.json({ success: true, data: newCity });
     } else {
-      res.status(404).json({ success: false, error: 'City not found' });
+      res.status(500).json({ success: false, error: 'Failed to add city' });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
 });
 
-// City Login
+// City login
 router.post('/cities/login', (req, res) => {
-  const { cityName, username, password } = req.body;
-  if (!cityName || !username || !password) {
-    return res.status(400).json({ success: false, error: 'City, username, and password are required' });
-  }
+  try {
+    const { cityName, username, password } = req.body;
 
-  const query = 'SELECT * FROM cities WHERE name = ? AND username = ? AND password = ?';
-  
-  db.get(query, [cityName, username, password], (err, row) => {
-    if (err) {
-      console.error('Error during city login:', err);
-      res.status(500).json({ success: false, error: 'Database error' });
-      return;
+    if (!cityName || !username || !password) {
+      return res.status(400).json({ success: false, error: 'City name, username and password are required' });
     }
+
+    const db = getDb();
+
+    // Get city details
+    const city = db.prepare('SELECT id, name FROM cities WHERE name = ?').get(cityName);
     
-    if (row) {
-      res.json({ success: true, data: { id: row.id, name: row.name } });
+    if (!city) {
+      return res.status(404).json({ success: false, error: 'City not found' });
+    }
+
+    // In a real application, you would hash the password and compare with stored hash
+    // For this example, we're using a simple check
+    if (username === `${cityName.toLowerCase()}_admin` && password === `${cityName.toLowerCase()}_123`) {
+      res.json({ success: true, data: city });
     } else {
       res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
 });
 
 module.exports = router;
