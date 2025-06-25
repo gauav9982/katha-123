@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { MAIN_APP_URL } from '../config/routes';
 
 interface SessionCheckProps {
   children: React.ReactNode;
@@ -59,13 +60,7 @@ const SessionCheck: React.FC<SessionCheckProps> = ({ children }) => {
     console.log('SessionCheck: No valid session, redirecting to main application');
     setIsAuthenticated(false);
     setIsLoading(false);
-    
-    // Redirect to main application based on environment
-    const baseUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:5173'
-      : window.location.protocol + '//' + window.location.hostname;
-    
-    window.location.href = baseUrl;
+    window.location.href = MAIN_APP_URL;
   }, [searchParams, navigate]);
 
   if (isLoading) {

@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import TopBar from './TopBar';
 import { Link } from 'react-router-dom';
+import { API_ENDPOINTS, MAIN_APP_URL, ROUTES } from '../config/routes';
 
 interface City {
   id: number;
@@ -24,13 +25,6 @@ const SchoolDashboard = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState('');
 
-  // Get base URL for API calls
-  const getApiBaseUrl = () => {
-    return window.location.hostname === 'localhost' 
-      ? '/api'
-      : '/school-app/api';
-  };
-
   useEffect(() => {
     // Set default session
     const sessionData = {
@@ -44,7 +38,7 @@ const SchoolDashboard = () => {
 
   const fetchCities = async () => {
     try {
-      const response = await fetch(`${getApiBaseUrl()}/cities`);
+      const response = await fetch(API_ENDPOINTS.CITIES);
       const data = await response.json();
       if (data.success) {
         setCities(data.data);
@@ -60,13 +54,7 @@ const SchoolDashboard = () => {
     localStorage.removeItem('schoolLoginSession');
     localStorage.removeItem('schoolCityId');
     localStorage.removeItem('schoolCityName');
-    
-    // Redirect based on environment
-    const baseUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:5173'
-      : window.location.protocol + '//' + window.location.hostname;
-    
-    window.location.href = baseUrl;
+    window.location.href = MAIN_APP_URL;
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,7 +72,7 @@ const SchoolDashboard = () => {
     try {
       console.log('Attempting login for city:', cityName);
       
-      const response = await fetch(`${getApiBaseUrl()}/cities/login`, {
+      const response = await fetch(API_ENDPOINTS.CITY_LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cityName: cityName.trim() })
@@ -123,14 +111,14 @@ const SchoolDashboard = () => {
       description: 'Add new teacher to the system',
       icon: UserPlusIcon,
       color: 'bg-blue-500 hover:bg-blue-600',
-      route: '/add-teacher'
+      route: ROUTES.ADD_TEACHER
     },
     {
       title: 'Teacher List',
       description: 'View and manage all teachers',
       icon: UsersIcon,
       color: 'bg-green-500 hover:bg-green-600',
-      route: '/teacher-management'
+      route: ROUTES.TEACHER_MANAGEMENT
     },
     // Salary & Allowances
     {
@@ -138,28 +126,28 @@ const SchoolDashboard = () => {
       description: 'Manage teacher salaries',
       icon: CurrencyDollarIcon,
       color: 'bg-yellow-500 hover:bg-yellow-600',
-      route: '/salary-management'
+      route: ROUTES.SALARY_MANAGEMENT
     },
     {
       title: 'DA% Management',
       description: 'Manage Dearness Allowance',
       icon: CurrencyDollarIcon,
       color: 'bg-orange-500 hover:bg-orange-600',
-      route: '/da-management'
+      route: ROUTES.DA_MANAGEMENT
     },
     {
       title: 'HRA% Management',
       description: 'Manage House Rent Allowance',
       icon: CurrencyDollarIcon,
       color: 'bg-teal-500 hover:bg-teal-600',
-      route: '/hra-management'
+      route: ROUTES.HRA_MANAGEMENT
     },
     {
       title: 'LWP & HLWP',
       description: 'Manage Leave Without Pay records',
       icon: CalendarIcon,
       color: 'bg-red-500 hover:bg-red-600',
-      route: '/lwp-management'
+      route: ROUTES.LWP_MANAGEMENT
     },
     // Reports
     {
@@ -167,21 +155,21 @@ const SchoolDashboard = () => {
       description: 'Generate Complete All Payable Report',
       icon: DocumentTextIcon,
       color: 'bg-red-600 hover:bg-red-700',
-      route: '/all-payable'
+      route: ROUTES.ALL_PAYABLE
     },
     {
       title: 'All Paid Report',
       description: 'Generate Complete All Paid Report',
       icon: DocumentTextIcon,
       color: 'bg-green-600 hover:bg-green-700',
-      route: '/all-paid'
+      route: ROUTES.ALL_PAID
     },
     {
       title: 'Different Salary Report',
       description: 'Generate Different Salary Report',
       icon: DocumentTextIcon,
       color: 'bg-cyan-600 hover:bg-cyan-700',
-      route: '/different-salary'
+      route: ROUTES.DIFFERENT_SALARY
     }
   ];
 
