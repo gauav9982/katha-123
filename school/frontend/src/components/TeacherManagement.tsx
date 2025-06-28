@@ -17,15 +17,22 @@ const TeacherManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   
+  // Set default city if not present
+  if (!localStorage.getItem('schoolCityId')) {
+    localStorage.setItem('schoolCityId', '46'); // cityId for Nadiad
+  }
+  if (!localStorage.getItem('schoolCityName')) {
+    localStorage.setItem('schoolCityName', 'Nadiad');
+  }
+  
   const cityId = localStorage.getItem('schoolCityId');
-  const cityName = localStorage.getItem('schoolCityName') || 'Unknown City';
+  const cityName = localStorage.getItem('schoolCityName') || 'Nadiad';
 
   useEffect(() => {
     if (!cityId) {
       setError('No city selected. Please login again.');
       setIsLoading(false);
-      // Optional: Redirect to dashboard or login page
-      navigate('/dashboard'); 
+      navigate('/dashboard');
       return;
     }
 
@@ -33,22 +40,40 @@ const TeacherManagement = () => {
       setIsLoading(true);
       setError('');
       try {
-        const response = await fetch(`http://localhost:4001/api/teachers?cityName=${encodeURIComponent(cityName)}`);
+        // Improved API URL logic
+        let apiBase = '/api';
+        if (window.location.hostname === 'localhost') {
+          apiBase = 'http://localhost:4001/api';
+        } else if (window.location.pathname.startsWith('/school-app')) {
+          apiBase = '/school-app/api';
+        }
+        
+        console.log('Fetching teachers from:', `${apiBase}/teachers?cityName=${encodeURIComponent(cityName)}`);
+        
+        const response = await fetch(`${apiBase}/teachers?cityName=${encodeURIComponent(cityName)}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('API Response:', data);
+        
         if (data.success) {
           setTeachers(data.data);
         } else {
           setError(data.error || 'Failed to fetch teachers.');
         }
       } catch (err) {
-        setError('Could not connect to the server.');
+        console.error('Error fetching teachers:', err);
+        setError('Could not connect to the server. Please check your connection.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTeachers();
-  }, [cityId, navigate]);
+  }, [cityId, cityName, navigate]);
 
   const handleEdit = (teacherId) => {
     // Navigate to edit page
@@ -84,7 +109,17 @@ const TeacherManagement = () => {
       <div className="container mx-auto p-4 md:p-8">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           {isLoading && <p className="text-center text-gray-500">Loading teachers...</p>}
-          {error && <p className="text-center text-red-500">{error}</p>}
+          {error && (
+            <div className="text-center">
+              <p className="text-red-500 mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              >
+                Retry
+              </button>
+            </div>
+          )}
           
           {!isLoading && !error && (
             <div className="overflow-x-auto">

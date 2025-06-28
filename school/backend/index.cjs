@@ -1626,21 +1626,40 @@ app.get('/api/cities', (req, res) => {
 app.get('/api/teachers', (req, res) => {
   try {
     const { cityName } = req.query;
+    console.log('Teachers API called with cityName:', cityName);
+    
     if (!cityName) {
+      console.log('Error: City name is required');
       return res.status(400).json({ success: false, error: 'City name is required' });
     }
 
     const { getDatabase } = require('./config/database.cjs');
     const db = getDatabase();
 
-    const city = db.prepare('SELECT id FROM cities WHERE name = ?').get(cityName);
+    // Case-insensitive city name match
+    const city = db.prepare('SELECT id, name FROM cities WHERE LOWER(name) = LOWER(?)').get(cityName);
+    console.log('Found city:', city);
+    
     if (!city) {
-      return res.status(404).json({ success: false, error: 'City not found' });
+      console.log('Error: City not found for name:', cityName);
+      return res.status(404).json({ 
+        success: false, 
+        error: `City '${cityName}' not found. Available cities: ${db.prepare('SELECT name FROM cities').all().map(c => c.name).join(', ')}` 
+      });
     }
 
+    // Get teachers for this city
     const teachers = db.prepare('SELECT * FROM teachers WHERE city_id = ?').all(city.id);
-    res.json({ success: true, data: teachers });
+    console.log(`Found ${teachers.length} teachers for city ${cityName} (ID: ${city.id})`);
+    
+    res.json({ 
+      success: true, 
+      data: teachers,
+      city: { id: city.id, name: city.name },
+      count: teachers.length
+    });
   } catch (error) {
+    console.error('Error in teachers API:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
