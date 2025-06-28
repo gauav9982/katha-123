@@ -29,7 +29,7 @@ const GradeSection = ({ title, data, setData }) => (
   <div className="p-4 border border-gray-200 rounded-lg">
     <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <FormInput label="Grade Date" type="date" value={data.gradeDate} onChange={(e) => setData({ ...data, gradeDate: e.target.value })} placeholder="DD-MM-YYYY" />
+      <FormInput label="Grade Date" type="text" value={data.gradeDate} onChange={(e) => setData({ ...data, gradeDate: e.target.value })} placeholder="DD-MM-YYYY" />
       <FormInput label="Payable Basic" type="number" value={data.payableBasic} onChange={(e) => setData({ ...data, payableBasic: e.target.value })} placeholder="" />
       <FormInput label="Payable Grade Pay" type="number" value={data.payableGradePay} onChange={(e) => setData({ ...data, payableGradePay: e.target.value })} placeholder="" />
       <FormInput label="Paid Basic" type="number" value={data.paidBasic} onChange={(e) => setData({ ...data, paidBasic: e.target.value })} placeholder="" />
@@ -43,12 +43,12 @@ const PayCommissionSection = ({ title, data, setData }) => (
   <div className="p-4 border border-gray-200 rounded-lg">
     <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <FormInput label="Pay Date" type="date" value={data.payDate} onChange={(e) => setData({ ...data, payDate: e.target.value })} placeholder="DD-MM-YYYY" />
+      <FormInput label="Pay Date" type="text" value={data.payDate} onChange={(e) => setData({ ...data, payDate: e.target.value })} placeholder="DD-MM-YYYY" />
       <FormInput label="Payable Basic" type="number" value={data.payableBasic} onChange={(e) => setData({ ...data, payableBasic: e.target.value })} placeholder="" />
       <FormInput label="Payable Grade Pay" type="number" value={data.payableGradePay} onChange={(e) => setData({ ...data, payableGradePay: e.target.value })} placeholder="" />
       <FormInput label="Paid Basic" type="number" value={data.paidBasic} onChange={(e) => setData({ ...data, paidBasic: e.target.value })} placeholder="" />
       <FormInput label="Paid Grade Pay" type="number" value={data.paidGradePay} onChange={(e) => setData({ ...data, paidGradePay: e.target.value })} placeholder="" />
-      <FormInput label="Yearly Increment Date" type="date" value={data.yearlyIncrementDate} onChange={(e) => setData({ ...data, yearlyIncrementDate: e.target.value })} placeholder="DD-MM-YYYY" />
+      <FormInput label="Yearly Increment Date" type="text" value={data.yearlyIncrementDate} onChange={(e) => setData({ ...data, yearlyIncrementDate: e.target.value })} placeholder="DD-MM-YYYY" />
     </div>
   </div>
 );
@@ -188,9 +188,9 @@ const AddTeacherForm = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormInput label="Teacher Name" value={basicInfo.name} onChange={(e) => setBasicInfo({ ...basicInfo, name: e.target.value })} placeholder="" />
-                <FormInput label="Birthday" type="date" value={basicInfo.birthday} onChange={(e) => setBasicInfo({ ...basicInfo, birthday: e.target.value })} placeholder="DD-MM-YYYY" />
-                <FormInput label="Joining Date" type="date" value={basicInfo.joiningDate} onChange={(e) => setBasicInfo({ ...basicInfo, joiningDate: e.target.value })} placeholder="DD-MM-YYYY" />
-                <FormInput label="Retirement Date" type="date" value={basicInfo.retirementDate} onChange={(e) => setBasicInfo({ ...basicInfo, retirementDate: e.target.value })} placeholder="DD-MM-YYYY" />
+                <FormInput label="Birthday" type="text" value={basicInfo.birthday} onChange={(e) => setBasicInfo({ ...basicInfo, birthday: e.target.value })} placeholder="DD-MM-YYYY" />
+                <FormInput label="Joining Date" type="text" value={basicInfo.joiningDate} onChange={(e) => setBasicInfo({ ...basicInfo, joiningDate: e.target.value })} placeholder="DD-MM-YYYY" />
+                <FormInput label="Retirement Date" type="text" value={basicInfo.retirementDate} onChange={(e) => setBasicInfo({ ...basicInfo, retirementDate: e.target.value })} placeholder="DD-MM-YYYY" />
               </div>
             </div>
 
