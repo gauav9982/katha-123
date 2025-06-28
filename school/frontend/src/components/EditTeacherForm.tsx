@@ -80,7 +80,7 @@ const EditTeacherForm = () => {
 
     const fetchTeacherData = async () => {
       try {
-        const response = await fetch(`/api/teachers/${teacherId}`);
+        const response = await fetch(`/school-app/api/teachers/${teacherId}`);
         const data = await response.json();
         
         if (data.success) {
@@ -194,7 +194,7 @@ const EditTeacherForm = () => {
     };
     
     try {
-      const response = await fetch(`/api/teachers/${teacherId}`, {
+      const response = await fetch(`/school-app/api/teachers/${teacherId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

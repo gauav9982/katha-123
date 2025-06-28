@@ -140,7 +140,7 @@ const AddTeacherForm = () => {
     };
     
     try {
-      const response = await fetch('/api/teachers', {
+      const response = await fetch('/school-app/api/teachers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
