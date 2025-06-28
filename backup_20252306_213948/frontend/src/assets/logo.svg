@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#f8f9fa" rx="10" ry="10"/>
+  <text x="200" y="100" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#3b82f6">
+    Katha Sales
+  </text>
+  <text x="200" y="140" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="#6b7280">
+    Inventory Management
+  </text>
+</svg> 

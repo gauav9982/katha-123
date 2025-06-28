@@ -1,0 +1,24 @@
+{
+  "name": "katha-sales-system",
+  "version": "1.0.0",
+  "description": "Complete sales management system with frontend and backend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "setup": "cd backend && node setup-database.cjs",
+    "deploy:github": "bash deploy-github.sh",
+    "deploy:github:win": "powershell -ExecutionPolicy Bypass -File deploy-github.ps1",
+    "deploy:manual": "echo 'Please follow docs/GITHUB_DEPLOYMENT.md for manual deployment'"
+  },
+  "keywords": ["sales", "inventory", "management", "react", "nodejs"],
+  "author": "Katha Sales",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
