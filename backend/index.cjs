@@ -3,6 +3,12 @@ const cors = require('cors');
 const routes = require('./routes/index.cjs');
 const app = express();
 
+// Debug logging to understand execution context
+console.log('=== DEBUG: backend/index.cjs is being executed ===');
+console.log('require.main === module:', require.main === module);
+console.log('__filename:', __filename);
+console.log('process.argv:', process.argv);
+
 // Simple CORS configuration - Allow specific origins
 const allowedOrigins = [
   'http://kathasales.com',
@@ -49,9 +55,13 @@ app.get('/', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 4005;
+
+// Only start the server if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, '127.0.0.1', () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
 
 module.exports = app; 

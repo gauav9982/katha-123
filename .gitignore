@@ -1,12 +1,63 @@
+# Dependencies
 node_modules/
-.DS_Store
+*/node_modules/
+
+# Build outputs
 dist/
 build/
-*.log
+*/dist/
+*/build/
+
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Database files (keep structure but ignore actual DB files)
+database/*.db
+database/*.db-journal
 *.db
-*.db-journal 
+*.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+.tmp/
+.temp/
+
+# Vite cache
+.vite/
+*/vite/
+
+# Test coverage
+coverage/
+
+# Empty files
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!postcss.config.js
+!tailwind.config.js
+!vite.config.ts
+
+# Test files
+test.html
+test-api.js
+check-database.js 
